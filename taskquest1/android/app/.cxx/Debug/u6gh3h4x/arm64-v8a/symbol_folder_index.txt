@@ -1,0 +1,1 @@
+/Users/camillacalle/AndroidStudioProjects/TaskQuest8/taskquest1/build/app/intermediates/cxx/Debug/u6gh3h4x/obj/arm64-v8a
