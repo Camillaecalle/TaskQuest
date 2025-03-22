@@ -3,6 +3,7 @@ import 'components/const/colors.dart';
 import 'components/button_widget.dart';
 import 'package:flutter/material.dart';
 import 'sign_up_ui.dart';
+import 'task_manager_page.dart';
 
 class AuthenticationUI extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
             children: [
               Image.asset(
                 'assets/images/green_guy.png',
-                height: 200,
+                height: 175,
               ),
               SizedBox(height: 30),
               // Email input
@@ -88,16 +89,23 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
               SizedBox(height: 20),
 
               // Sign In Button
-          ButtonWidget(
-            text: 'Sign In',
-            onPressed: () {
-              if (_formKey.currentState?.validate() ?? false) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Processing Data')),
-                );
-              }
-            },
-          ),
+              ButtonWidget(
+                text: 'Sign In',
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Processing Data')),
+                    );
+
+                    // Navigate to the TaskManagerPage after sign-in
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TaskManagerPage()),
+                    );
+                  }
+                },
+              ),
+
           SizedBox(height: 20), // adding space between button and text
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
