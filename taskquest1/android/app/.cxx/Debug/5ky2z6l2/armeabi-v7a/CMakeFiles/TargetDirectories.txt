@@ -1,0 +1,2 @@
+/Users/camillacalle/AndroidStudioProjects/TaskQuest8/taskquest1/android/app/.cxx/Debug/5ky2z6l2/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/camillacalle/AndroidStudioProjects/TaskQuest8/taskquest1/android/app/.cxx/Debug/5ky2z6l2/armeabi-v7a/CMakeFiles/rebuild_cache.dir

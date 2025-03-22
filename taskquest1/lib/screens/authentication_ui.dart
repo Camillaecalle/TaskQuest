@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'components/const/colors.dart';
+import 'components/button_widget.dart';
+import 'package:flutter/material.dart';
 
 class AuthenticationUI extends StatefulWidget {
   @override
@@ -15,6 +18,8 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Sign In"),
+        centerTitle: true,
+        backgroundColor: primaryGreen,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -23,13 +28,25 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image.asset(
+                'assets/images/green_guy.png',
+                height: 200,
+              ),
+              SizedBox(height: 30),
               // Email input
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   hintText: 'Enter your email',
+                  hintStyle: TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryGreen),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryGreen),
+                  ),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
@@ -50,7 +67,14 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintText: 'Enter your password',
+                  hintStyle: TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryGreen),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryGreen),
+                  ),
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -63,16 +87,15 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
               SizedBox(height: 20),
 
               // Sign In Button
-              ElevatedButton(
+              ButtonWidget(
+                text: 'Sign In',
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Processing Data')),
                     );
                   }
                 },
-                child: Text('Sign In'),
               ),
             ],
           ),

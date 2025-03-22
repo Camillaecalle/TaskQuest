@@ -1,3 +1,16 @@
+buildscript {
+    ext.kotlin_version = '2.1.0'
+    repositories {
+        google()  // This is needed for Firebase and Google services
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.1'  // Ensure you are using the correct Gradle plugin version
+        classpath 'com.google.gms:google-services:4.3.15'  // Add the classpath for Firebase and Google services
+        // Other classpaths for your project can go here
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -6,10 +19,9 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
 }
 
