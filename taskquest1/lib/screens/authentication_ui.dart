@@ -87,16 +87,35 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
               SizedBox(height: 20),
 
               // Sign In Button
-              ButtonWidget(
-                text: 'Sign In',
+          ButtonWidget(
+            text: 'Sign In',
+            onPressed: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Processing Data')),
+                );
+              }
+            },
+          ),
+          SizedBox(height: 20), // adding space between button and text
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Don't have an account?"),
+              TextButton(
                 onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Processing Data')),
-                    );
-                  }
+                  // Add sign up navigation
                 },
+                child: Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    color: primaryGreen,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
+            ],
+          ),
             ],
           ),
         ),
