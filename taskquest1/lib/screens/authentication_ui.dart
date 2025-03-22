@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
 import 'package:flutter/material.dart';
+import 'sign_up_ui.dart';
 
 class AuthenticationUI extends StatefulWidget {
   @override
@@ -104,7 +105,10 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
               Text("Don't have an account?"),
               TextButton(
                 onPressed: () {
-                  // Add sign up navigation
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SignUpUI()),
+                  );
                 },
                 child: Text(
                   'Sign Up',
