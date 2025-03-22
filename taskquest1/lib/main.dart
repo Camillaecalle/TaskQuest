@@ -6,7 +6,7 @@ import 'screens/task_manager_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensures binding before async call
-  await Firebase.initializeApp(); // ✅ Initialize Firebase
+  await Firebase.initializeApp(); // Initialize Firebase
   runApp(MyApp());
 }
 
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: primaryGreen, // Set primary color to the defined green
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: secondaryGreen, // Set accent color
+          secondary: secondaryGreen, // Set accent color using secondary
         ),
         scaffoldBackgroundColor: backgroundColor, // Set background color
         textTheme: const TextTheme(
@@ -43,3 +43,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
