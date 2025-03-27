@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
-import 'package:flutter/material.dart';
 import 'sign_up_ui.dart';
 import 'task_manager_page.dart';
+import '../services/authentication_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthenticationUI extends StatefulWidget {
   @override
@@ -14,6 +15,8 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final AuthenticationService _authService = AuthenticationService(FirebaseAuth.instance);
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +38,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 height: 175,
               ),
               SizedBox(height: 30),
+
               // Email input
               TextFormField(
                 controller: _emailController,
@@ -52,12 +56,8 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
+                  if (value == null || value.isEmpty) return 'Please enter your email';
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) return 'Enter a valid email';
                   return null;
                 },
               ),
@@ -80,9 +80,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 ),
                 obscureText: true,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
+                  if (value == null || value.isEmpty) return 'Please enter your password';
                   return null;
                 },
               ),
@@ -91,43 +89,51 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
               // Sign In Button
               ButtonWidget(
                 text: 'Sign In',
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Processing Data')),
-                    );
+                    final email = _emailController.text.trim();
+                    final password = _passwordController.text;
 
-                    // Navigate to the TaskManagerPage after sign-in
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => TaskManagerPage()),
-                    );
+                    final result = await _authService.signIn(email: email, password: password);
+
+                    if (result == "Signed in") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TaskManagerPage()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(result ?? 'Sign in failed')),
+                      );
+                    }
                   }
                 },
               ),
 
-          SizedBox(height: 20), // adding space between button and text
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Don't have an account?"),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpUI()),
-                  );
-                },
-                child: Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    color: primaryGreen,
-                    fontWeight: FontWeight.bold,
+              SizedBox(height: 20),
+
+              // Sign up prompt
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don't have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpUI()),
+                      );
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: primaryGreen,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
             ],
           ),
         ),
