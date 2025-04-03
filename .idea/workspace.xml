@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c6502725-b11b-435c-8fe6-5388c83e3051" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/taskquest1/lib/screens/calendar_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/arm64-v8a/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/arm64-v8a/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/armeabi-v7a/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/armeabi-v7a/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86_64/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86_64/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/lib/screens/task_manager_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/lib/screens/task_manager_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/pubspec.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/camillacalle/.android/avd/Medium_Phone_API_35.avd)]" />
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="task_manager" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ScreenRecorder.SavePath&quot;: &quot;/Users/kareema&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;task__manager&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/taskquest1/lib/screens" />
+    </key>
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+</project>
