@@ -35,7 +35,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
             children: [
               Image.asset(
                 'assets/images/green_guy.png',
-                height: 175,
+                height: 150,
               ),
               SizedBox(height: 30),
 

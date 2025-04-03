@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
+import '../services/authentication_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpUI extends StatefulWidget {
   @override
@@ -12,6 +14,8 @@ class _SignUpUIState extends State<SignUpUI> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final AuthenticationService _authService = AuthenticationService(FirebaseAuth.instance);
 
   @override
   Widget build(BuildContext context) {
@@ -114,11 +118,23 @@ class _SignUpUIState extends State<SignUpUI> {
               // Sign Up Button
               ButtonWidget(
                 text: 'Create Account',
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Creating account...')),
-                    );
+                    final email = _emailController.text.trim();
+                    final password = _passwordController.text;
+
+                    final result = await _authService.signUp(email: email, password: password);
+
+                    if (result == "Signed up") {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Account created successfully!')),
+                      );
+                      Navigator.pop(context); // Go back to Sign In page
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(result ?? 'Sign up failed')),
+                      );
+                    }
                   }
                 },
               ),
