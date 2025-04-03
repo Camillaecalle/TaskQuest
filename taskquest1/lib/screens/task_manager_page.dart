@@ -2,25 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For formatting the date
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
+import 'calendar_page.dart';
 
 class TaskManagerPage extends StatefulWidget {
   @override
   _TaskManagerPageState createState() => _TaskManagerPageState();
 }
+
 List<Map<String, dynamic>> _highPriorityTasks = [];
 List<Map<String, dynamic>> _mediumPriorityTasks = [];
 List<Map<String, dynamic>> _lowPriorityTasks = [];
-
 
 class _TaskManagerPageState extends State<TaskManagerPage> {
   final List<Map<String, dynamic>> _completedTasks = [];
   final List<Map<String, dynamic>> _tasks = [];
   final TextEditingController _taskController = TextEditingController();
+  final TextEditingController _taskNotesController = TextEditingController();
+
+  String _sortOrder = 'Due Date'; // or 'Recently Added'
+
+  List<Map<String, dynamic>> _getSortedTasks() {
+    List<Map<String, dynamic>> sortedTasks = [..._tasks];
+    if (_sortOrder == 'Due Date') {
+      sortedTasks.sort((a, b) => a['dueDate'].compareTo(b['dueDate']));
+    } else {
+      sortedTasks.sort((a, b) => b['id'].compareTo(a['id'])); // Recently added
+    }
+    return sortedTasks;
+  }
+
   DateTime? _selectedDueDate;
   String _selectedPriority = 'Medium';
   int? _editingIndex;
   double _progress = 0.0;
   int _currentIndex = 0;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
 
   // Function to calculate the progress based on completed tasks
   void _calculateProgress() {
@@ -34,13 +51,13 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     if (totalCount == 0) {
       _progress = 0.0; // If no tasks, set progress to 0
     } else {
-      _progress = completedCount / totalCount; // Progress as the ratio of completed tasks to total tasks
+      _progress = completedCount /
+          totalCount; // Progress as the ratio of completed tasks to total tasks
     }
 
     // Ensure the progress bar reflects the updated value
     setState(() {});
   }
-
 
   void _openTaskDialog({int? index}) {
     if (index != null) {
@@ -48,8 +65,11 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _selectedDueDate = _tasks[index]['dueDate'];
       _selectedPriority = _tasks[index]['priority'];
       _editingIndex = index;
+      final task = _tasks[index];
+      _taskNotesController.text = task['notes'] ?? '';
     } else {
       _taskController.clear();
+      _taskNotesController.clear();
       _selectedDueDate = null;
       _selectedPriority = 'Medium';
       _editingIndex = null;
@@ -109,6 +129,15 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
                     text: _editingIndex == null ? 'Add Task' : 'Update Task',
                     onPressed: _addOrEditTask,
                   ),
+                  TextField(
+                    controller: _taskNotesController,
+                    decoration: InputDecoration(
+                      labelText: 'Notes',
+                      hintText: 'Add any details...',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
                 ],
               ),
             );
@@ -118,10 +147,12 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     );
   }
 
-  Widget _buildPrioritySection(String title, Color color, List<Map<String, dynamic>> tasks) {
+  Widget _buildPrioritySection(
+      String title, Color color, List<Map<String, dynamic>> tasks) {
     final filteredTasks = tasks.where((task) => !task['completed']).toList();
 
-    if (filteredTasks.isEmpty) return SizedBox.shrink(); // Hide if no tasks remain
+    if (filteredTasks.isEmpty)
+      return SizedBox.shrink(); // Hide if no tasks remain
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -175,8 +206,13 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             Text(task['task']),
           ],
         ),
-        subtitle: Text(
-          'Due: ${DateFormat('MMM dd, yyyy').format(task['dueDate'])}',
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Due: ${DateFormat('MMM dd, yyyy').format(task['dueDate'])}'),
+            if (task['notes'] != null && task['notes'].isNotEmpty)
+              Text('Notes: ${task['notes']}'),
+          ],
         ),
         leading: Checkbox(
           value: task['completed'],
@@ -198,6 +234,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       ),
     );
   }
+
   Future<void> _pickDueDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -213,16 +250,20 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   }
 
   void _groupTasksByPriority() {
-    _highPriorityTasks = _tasks.where((task) => task['priority'] == 'High').toList();
-    _mediumPriorityTasks = _tasks.where((task) => task['priority'] == 'Medium').toList();
-    _lowPriorityTasks = _tasks.where((task) => task['priority'] == 'Low').toList();
+    _highPriorityTasks =
+        _tasks.where((task) => task['priority'] == 'High').toList();
+    _mediumPriorityTasks =
+        _tasks.where((task) => task['priority'] == 'Medium').toList();
+    _lowPriorityTasks =
+        _tasks.where((task) => task['priority'] == 'Low').toList();
   }
 
   void _addOrEditTask() {
     final text = _taskController.text.trim();
     if (text.isNotEmpty && _selectedDueDate != null) {
       setState(() {
-        final taskId = DateTime.now().millisecondsSinceEpoch;  // Generate a unique ID (timestamp)
+        final taskId = DateTime.now()
+            .millisecondsSinceEpoch; // Generate a unique ID (timestamp)
         if (_editingIndex != null) {
           _tasks[_editingIndex!] = {
             'id': taskId,
@@ -230,6 +271,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             'dueDate': _selectedDueDate!,
             'priority': _selectedPriority,
             'completed': false,
+            'notes': _taskNotesController.text.trim(),
           };
         } else {
           _tasks.add({
@@ -238,6 +280,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             'dueDate': _selectedDueDate!,
             'priority': _selectedPriority,
             'completed': false,
+            'notes': _taskNotesController.text.trim(), // new field
           });
         }
         _sortTasks();
@@ -245,13 +288,13 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
         _calculateProgress(); // Update progress after adding/editing tasks
       });
       _taskController.clear();
+      _taskNotesController.clear();
       _selectedDueDate = null;
       _selectedPriority = 'Medium';
       _editingIndex = null;
       Navigator.pop(context); // Close the dialog
     }
   }
-
 
   void _deleteTask(int index) {
     setState(() {
@@ -268,19 +311,22 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       if (index < _tasks.length) {
         task = _tasks[index]; // Task in _tasks
       } else {
-        task = _completedTasks[index - _tasks.length]; // Task in _completedTasks
+        task =
+            _completedTasks[index - _tasks.length]; // Task in _completedTasks
       }
 
-      final taskId = task['id'];  // Get the task ID to identify it uniquely
+      final taskId = task['id']; // Get the task ID to identify it uniquely
 
       if (task['completed']) {
         // Task is being marked as incomplete, move it back to _tasks
         task['completed'] = false;
         _tasks.add(task); // Add back to _tasks
-        _completedTasks.removeWhere((t) => t['id'] == taskId); // Remove from _completedTasks
+        _completedTasks.removeWhere(
+            (t) => t['id'] == taskId); // Remove from _completedTasks
       } else {
         // Task is being marked as complete, move it to _completedTasks
         task['completed'] = true;
+        task['completedDate'] = DateTime.now();
         _completedTasks.add(task); // Add to _completedTasks
         _tasks.removeAt(index); // Remove from _tasks
       }
@@ -288,17 +334,15 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     });
   }
 
-
   void _sortTasks() {
-    _tasks.sort((a, b) {
-      final priorityOrder = {'High': 0, 'Medium': 1, 'Low': 2};
-      int priorityComparison = priorityOrder[a['priority']]!.compareTo(
-          priorityOrder[b['priority']]!);
-      if (priorityComparison == 0) {
-        return a['dueDate'].compareTo(b['dueDate']);
-      }
-      return priorityComparison;
-    });
+    List<Map<String, dynamic>> sorted = [..._tasks];
+    if (_sortOrder == 'Due Date') {
+      sorted.sort((a, b) => a['dueDate'].compareTo(b['dueDate']));
+    } else {
+      sorted.sort((a, b) => b['id'].compareTo(a['id']));
+    }
+    _tasks.clear();
+    _tasks.addAll(sorted);
   }
 
   Color _getPriorityColor(String priority) {
@@ -320,6 +364,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _selectedDueDate = _tasks[index]['dueDate'];
       _selectedPriority = _tasks[index]['priority'];
       _editingIndex = index;
+      final task = _tasks[index];
+      _taskNotesController.text = task['notes'] ?? '';
     });
     _openTaskDialog(index: index);
   }
@@ -330,12 +376,11 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     });
   }
 
-
   // Pages for other tabs (empty for now)
   Widget _buildTabContent(int index) {
     switch (index) {
       case 1:
-        return Center(child: Text('Calendar View - Empty for now.'));
+        return _buildCalendarPage();
       case 2:
         return _buildCompletedTasksList(); // Show completed tasks
       case 3:
@@ -348,39 +393,43 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   }
 
   Widget _buildCompletedTasksList() {
+    _completedTasks.sort((a, b) => b['completedDate'].compareTo(a['completedDate']));
     return _completedTasks.isEmpty
         ? Center(child: Text('No completed tasks yet.'))
         : ListView.builder(
-      itemCount: _completedTasks.length,
-      itemBuilder: (context, index) {
-        final task = _completedTasks[index];
-        return Card(
-          child: ListTile(
-            title: Row(
-              children: [
-                Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: _getPriorityColor(task['priority']),
-                    shape: BoxShape.circle,
+            itemCount: _completedTasks.length,
+            itemBuilder: (context, index) {
+              final task = _completedTasks[index];
+              return Card(
+                child: ListTile(
+                  title: Row(
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: _getPriorityColor(task['priority']),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Text(task['task']),
+                    ],
+                  ),
+                  subtitle: Text(
+                    'Completed on: ${DateFormat('MMM dd, yyyy').format(task['completedDate'])}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  leading: Icon(Icons.check_circle, color: Colors.green),
+                  trailing: IconButton(
+                    icon: Icon(Icons.undo, color: Colors.blue), // Undo icon
+                    onPressed: () =>
+                        _unmarkTask(index), // Function to unmark task
                   ),
                 ),
-                SizedBox(width: 8),
-                Text(task['task']),
-              ],
-            ),
-            subtitle: Text(
-                'Completed on: ${DateFormat('MMM dd, yyyy').format(task['dueDate'])}'),
-            leading: Icon(Icons.check_circle, color: Colors.green),
-            trailing: IconButton(
-              icon: Icon(Icons.undo, color: Colors.blue), // Undo icon
-              onPressed: () => _unmarkTask(index), // Function to unmark task
-            ),
-          ),
-        );
-      },
-    );
+              );
+            },
+          );
   }
 
   void _unmarkTask(int index) {
@@ -400,7 +449,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       child: Column(
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
+            width:
+                MediaQuery.of(context).size.width * 0.8, // 80% of screen width
             height: 20, // Progress bar height
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10), // Rounded corners
@@ -428,34 +478,79 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   Widget _buildTaskList() {
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 4),
+              DropdownButton<String>(
+                value: _sortOrder,
+                isExpanded: true,
+                onChanged: (value) {
+                  setState(() {
+                    _sortOrder = value!;
+                    _sortTasks();
+                    _groupTasksByPriority();
+                  });
+                },
+                items: ['Due Date', 'Recently Added']
+                    .map((option) => DropdownMenuItem<String>(
+                          value: option,
+                          child: Text(option),
+                        ))
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
         // Progress Bar Section
-        _buildProgressBar(),  // Call the new method to build the progress bar
+        _buildProgressBar(), // Call the new method to build the progress bar
 
         // Task List Section
         _tasks.isEmpty
             ? Center(child: Text('No tasks added.'))
             : Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_highPriorityTasks.where((task) => !task['completed']).isNotEmpty)
-                  _buildPrioritySection('PRIORITY: HIGH', Colors.red, _highPriorityTasks),
-
-                if (_mediumPriorityTasks.where((task) => !task['completed']).isNotEmpty)
-                  _buildPrioritySection('PRIORITY: MEDIUM', Colors.orange, _mediumPriorityTasks),
-
-                if (_lowPriorityTasks.where((task) => !task['completed']).isNotEmpty)
-                  _buildPrioritySection('PRIORITY: LOW', Colors.green, _lowPriorityTasks),
-              ],
-            ),
-          ),
-        )
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (_highPriorityTasks
+                          .where((task) => !task['completed'])
+                          .isNotEmpty)
+                        _buildPrioritySection(
+                            'PRIORITY: HIGH', Colors.red, _highPriorityTasks),
+                      if (_mediumPriorityTasks
+                          .where((task) => !task['completed'])
+                          .isNotEmpty)
+                        _buildPrioritySection('PRIORITY: MEDIUM', Colors.orange,
+                            _mediumPriorityTasks),
+                      if (_lowPriorityTasks
+                          .where((task) => !task['completed'])
+                          .isNotEmpty)
+                        _buildPrioritySection(
+                            'PRIORITY: LOW', Colors.green, _lowPriorityTasks),
+                    ],
+                  ),
+                ),
+              )
       ],
     );
   }
 
-
+  Widget _buildCalendarPage() {
+    return CalendarPage(
+      tasks: _tasks,
+      selectedDay: _selectedDay,
+      focusedDay: _focusedDay,
+      onDaySelected: (selected, focused) {
+        setState(() {
+          _selectedDay = selected;
+          _focusedDay = focused;
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
