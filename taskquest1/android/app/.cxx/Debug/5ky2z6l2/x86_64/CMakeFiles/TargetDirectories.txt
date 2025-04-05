@@ -1,0 +1,2 @@
+/Users/camillacalle/AndroidStudioProjects/TaskQuest8/taskquest1/android/app/.cxx/Debug/5ky2z6l2/x86_64/CMakeFiles/edit_cache.dir
+/Users/camillacalle/AndroidStudioProjects/TaskQuest8/taskquest1/android/app/.cxx/Debug/5ky2z6l2/x86_64/CMakeFiles/rebuild_cache.dir

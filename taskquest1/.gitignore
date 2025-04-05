@@ -43,6 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+<<<<<<< HEAD
 # IDE and project settings
 
 
@@ -53,4 +54,15 @@ ios/Runner/GoogleService-Info.plist
 macos/Runner/GoogleService-Info.plist
 
 # Android CMake and build files
+=======
+android/app/google-services.json
+# Android specific
+android/app/.cxx/
+android/.gradle/
+android/.idea/
+
+# IDE specific
+.idea/
+*.iml
+>>>>>>> flutter_authentication
 android/app/.cxx/Debug/
