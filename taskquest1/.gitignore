@@ -43,3 +43,13 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# IDE and project settings
+.idea/
+
+# Firebase and Google services
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+
+# Android CMake and build files
+android/app/.cxx/Debug/
