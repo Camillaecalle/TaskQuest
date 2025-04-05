@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
-import 'package:flutter/material.dart';
 import 'sign_up_ui.dart';
 import 'task_manager_page.dart';
 
@@ -30,11 +29,14 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/green_guy.png',
-                height: 175,
+              Center(
+                child: Image.asset(
+                  'assets/images/task_quest.png',
+                  height: 100,
+                  fit: BoxFit.contain,
+                ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 32),
               // Email input
               TextFormField(
                 controller: _emailController,
@@ -106,28 +108,28 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 },
               ),
 
-          SizedBox(height: 20), // adding space between button and text
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Don't have an account?"),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpUI()),
-                  );
-                },
-                child: Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    color: primaryGreen,
-                    fontWeight: FontWeight.bold,
+              SizedBox(height: 20), // adding space between button and text
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don't have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpUI()),
+                      );
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: primaryGreen,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
             ],
           ),
         ),

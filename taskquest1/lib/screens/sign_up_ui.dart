@@ -28,7 +28,7 @@ class _SignUpUIState extends State<SignUpUI> {
           child: Column(
             children: [
               Image.asset(
-                'assets/images/green_guy.png',
+                'assets/images/task_quest.png',
                 height: 150,
               ),
               SizedBox(height: 30),

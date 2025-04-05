@@ -92,4 +92,4 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
   assets:
-    - assets/images/green_guy.png
+    - assets/images/task_quest.png

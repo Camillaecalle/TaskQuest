@@ -103,7 +103,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
                           : 'Due Date: ${DateFormat('MMM dd, yyyy').format(_selectedDueDate!)}',
                     ),
                     trailing: Icon(Icons.calendar_today, color: primaryGreen),
-                    onTap: _pickDueDate,
+                    onTap: () => _pickDueDate(setState),
                   ),
                   SizedBox(height: 12),
                   DropdownButtonFormField<String>(
@@ -235,7 +235,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     );
   }
 
-  Future<void> _pickDueDate() async {
+Future<void> _pickDueDate(void Function(void Function()) localSetState) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -243,7 +243,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       lastDate: DateTime(2100),
     );
     if (pickedDate != null) {
-      setState(() {
+      localSetState(() {
         _selectedDueDate = pickedDate;
       });
     }
