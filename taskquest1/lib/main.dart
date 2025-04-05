@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: primaryGreen, // Set primary color to the defined green
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: secondaryGreen, // Set accent color
+          secondary: secondaryGreen, // Set accent color using secondary
         ),
         scaffoldBackgroundColor: backgroundColor, // Set background color
         textTheme: const TextTheme(
