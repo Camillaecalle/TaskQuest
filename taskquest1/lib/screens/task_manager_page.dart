@@ -3,6 +3,8 @@ import 'package:intl/intl.dart'; // For formatting the date
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
 import 'calendar_page.dart';
+import 'leaderboard_page.dart';
+
 
 class TaskManagerPage extends StatefulWidget {
   @override
@@ -384,7 +386,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       case 2:
         return _buildCompletedTasksList(); // Show completed tasks
       case 3:
-        return Center(child: Text('Progress Overview - Empty for now.'));
+        return LeaderboardPage();
       case 4:
         return Center(child: Text('Settings - Empty for now.'));
       default:
