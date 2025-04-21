@@ -4,7 +4,7 @@ import 'components/const/colors.dart';
 import 'components/button_widget.dart';
 import 'calendar_page.dart';
 import 'leaderboard_page.dart';
-
+import 'settings_page.dart';
 
 class TaskManagerPage extends StatefulWidget {
   @override
@@ -388,7 +388,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       case 3:
         return LeaderboardPage();
       case 4:
-        return Center(child: Text('Settings - Empty for now.'));
+        return SettingsPage();
       default:
         return _buildTaskList();
     }
@@ -563,11 +563,14 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
         centerTitle: true,
       ),
       body: _buildTabContent(_currentIndex),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton(
         backgroundColor: primaryGreen,
         child: Icon(Icons.add, color: Colors.white),
         onPressed: () => _openTaskDialog(),
-      ),
+      )
+          : null,
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (int index) {
