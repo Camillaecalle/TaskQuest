@@ -12,7 +12,7 @@ class AvatarDesignPage extends StatelessWidget {
       ),
       body: Center(
         child: Text(
-          'Avatar customization coming soon!',
+          'Users will be able to design avatar here',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
