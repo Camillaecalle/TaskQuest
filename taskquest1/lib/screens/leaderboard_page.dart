@@ -6,7 +6,7 @@ class LeaderboardPage extends StatelessWidget {
     {'name': 'Camilla', 'score': 42},
     {'name': 'Ammar', 'score': 38},
     {'name': 'Kareema', 'score': 36},
-    {'name': 'Snigdah', 'score': 30},
+    {'name': 'Snigdha', 'score': 30},
     {'name': 'Leo', 'score': 0},
     {'name': 'Leo', 'score': 0},
     {'name': 'Leo', 'score': 0},
