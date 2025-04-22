@@ -38,7 +38,7 @@ class SettingsPage extends StatelessWidget {
       children: [
         ListTile(
           leading: Icon(Icons.person, color: primaryGreen),
-          title: Text('Customize Avatar'),
+          title: Text('Select Avatar'),
           trailing: Icon(Icons.arrow_forward_ios),
           onTap: () {
             Navigator.push(
