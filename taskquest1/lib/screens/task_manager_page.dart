@@ -496,7 +496,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TaskQuest'),
+        //title: Text('TaskQuest'),
         backgroundColor: primaryGreen,
         centerTitle: true,
       ),
