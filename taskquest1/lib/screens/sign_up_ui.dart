@@ -21,7 +21,7 @@ class _SignUpUIState extends State<SignUpUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sign Up"),
+        //title: Text("Sign Up"),
         centerTitle: true,
         backgroundColor: primaryGreen,
       ),
