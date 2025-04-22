@@ -22,7 +22,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Sign In"),
+        //title: Text("Sign In"),
         centerTitle: true,
         backgroundColor: primaryGreen,
       ),
@@ -35,7 +35,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
             children: [
               Image.asset(
                 'assets/images/green_guy.png',
-                height: 150,
+                height: 250,
               ),
               SizedBox(height: 30),
 
