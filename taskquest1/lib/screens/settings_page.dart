@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'avatar_design_page.dart';
 // (Assuming you'll create a notification settings page later)
+// (You'll create a ManageFriendsPage soon)
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -17,6 +18,28 @@ class SettingsPage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AvatarDesignPage()),
+            );
+          },
+        ),
+        Divider(),
+        ListTile(
+          leading: Icon(Icons.people, color: primaryGreen),
+          title: Text('Manage Friends'),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            // TODO: Create ManageFriendsPage and navigate there
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Manage Friends'),
+                content: Text('Friend management coming soon!'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('OK', style: TextStyle(color: primaryGreen)),
+                  ),
+                ],
+              ),
             );
           },
         ),
