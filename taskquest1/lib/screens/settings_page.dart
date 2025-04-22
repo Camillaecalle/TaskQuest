@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'avatar_design_page.dart';
-// (Assuming you'll create a notification settings page later)
-// (You'll create a ManageFriendsPage soon)
+import 'manage_friends_page.dart'; // <<< ADD THIS IMPORT
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -27,19 +26,9 @@ class SettingsPage extends StatelessWidget {
           title: Text('Manage Friends'),
           trailing: Icon(Icons.arrow_forward_ios),
           onTap: () {
-            // TODO: Create ManageFriendsPage and navigate there
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text('Manage Friends'),
-                content: Text('Friend management coming soon!'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('OK', style: TextStyle(color: primaryGreen)),
-                  ),
-                ],
-              ),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ManageFriendsPage()), // <<< Navigate to the real page
             );
           },
         ),
@@ -49,8 +38,6 @@ class SettingsPage extends StatelessWidget {
           title: Text('Notification Permissions'),
           trailing: Icon(Icons.arrow_forward_ios),
           onTap: () {
-            // Later you can navigate to a NotificationSettingsPage()
-            // For now, you could just show a placeholder page or dialog
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
