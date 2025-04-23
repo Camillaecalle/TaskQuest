@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
+import 'my_friends_page.dart'; // <-- NEW PAGE
 
 class ManageFriendsPage extends StatefulWidget {
   @override
@@ -9,10 +10,8 @@ class ManageFriendsPage extends StatefulWidget {
 class _ManageFriendsPageState extends State<ManageFriendsPage> {
   final TextEditingController _searchController = TextEditingController();
 
-  // Dummy Data for now (later you can fetch this from Firestore)
   List<String> _friends = ['Ammar', 'Kareema', 'Diana'];
   List<String> _searchResults = ['Camilla', 'John', 'Emily', 'Sam'];
-
   String _searchQuery = '';
 
   void _performSearch(String query) {
@@ -27,7 +26,6 @@ class _ManageFriendsPageState extends State<ManageFriendsPage> {
       _searchResults.remove(username);
     });
 
-    // Later you'll actually call Firebase here to send a friend request.
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Friend request sent to $username!')),
     );
@@ -48,31 +46,8 @@ class _ManageFriendsPageState extends State<ManageFriendsPage> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your Friends', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            _friends.isEmpty
-                ? Text('No friends yet. Start adding some!')
-                : Container(
-              height: 80,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _friends.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(right: 12),
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(child: Text(_friends[index])),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 24),
+            // Search Bar
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -83,6 +58,30 @@ class _ManageFriendsPageState extends State<ManageFriendsPage> {
               onChanged: _performSearch,
             ),
             SizedBox(height: 16),
+
+            // View Friends Button
+// View Friends Button
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyFriendsPage(friends: _friends)),
+                  );
+                },
+                icon: Icon(Icons.people, color: Colors.white),
+                label: Text('View All Friends'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryGreen,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 16),
+
+            // Search Results
             Expanded(
               child: filteredResults.isEmpty
                   ? Center(child: Text('No users found'))
