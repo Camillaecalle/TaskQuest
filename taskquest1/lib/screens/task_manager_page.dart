@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For formatting the date
+import 'package:intl/intl.dart';
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
 import 'calendar_page.dart';
@@ -32,6 +32,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   }
 
   DateTime? _selectedDueDate;
+  TimeOfDay? _selectedTime;
   String _selectedPriority = 'Medium';
   int? _editingIndex;
   double _progress = 0.0;
@@ -67,12 +68,14 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _editingIndex = index;
       final task = _tasks[index];
       _taskNotesController.text = task['notes'] ?? '';
+      _selectedTime = _tasks[index]['time'];
     } else {
       _taskController.clear();
       _taskNotesController.clear();
       _selectedDueDate = null;
       _selectedPriority = 'Medium';
       _editingIndex = null;
+      _selectedTime = null;
     }
 
     showDialog(
@@ -104,6 +107,16 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
                     ),
                     trailing: Icon(Icons.calendar_today, color: primaryGreen),
                     onTap: _pickDueDate,
+                  ),
+                  SizedBox(height: 12),
+                  ListTile(
+                    title: Text(
+                      _selectedTime == null
+                          ? 'Select Time'
+                          : 'Time: ${_selectedTime!.format(context)}',
+                    ),
+                    trailing: Icon(Icons.access_time, color: primaryGreen),
+                    onTap: _pickTime,
                   ),
                   SizedBox(height: 12),
                   DropdownButtonFormField<String>(
@@ -210,6 +223,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Due: ${DateFormat('MMM dd, yyyy').format(task['dueDate'])}'),
+            if (task['time'] != null)
+              Text('Time: ${task['time'].format(context)}'),
             if (task['notes'] != null && task['notes'].isNotEmpty)
               Text('Notes: ${task['notes']}'),
           ],
@@ -233,6 +248,24 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
         ),
       ),
     );
+  }
+  Future<void> _pickTime() async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      initialEntryMode: TimePickerEntryMode.input,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
+    if (pickedTime != null) {
+      setState(() {
+        _selectedTime = pickedTime;
+      });
+    }
   }
 
   Future<void> _pickDueDate() async {
@@ -262,8 +295,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     final text = _taskController.text.trim();
     if (text.isNotEmpty && _selectedDueDate != null) {
       setState(() {
-        final taskId = DateTime.now()
-            .millisecondsSinceEpoch; // Generate a unique ID (timestamp)
+        final taskId = DateTime.now().millisecondsSinceEpoch;
         if (_editingIndex != null) {
           _tasks[_editingIndex!] = {
             'id': taskId,
@@ -272,6 +304,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             'priority': _selectedPriority,
             'completed': false,
             'notes': _taskNotesController.text.trim(),
+            'time': _selectedTime,
           };
         } else {
           _tasks.add({
@@ -280,7 +313,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             'dueDate': _selectedDueDate!,
             'priority': _selectedPriority,
             'completed': false,
-            'notes': _taskNotesController.text.trim(), // new field
+            'notes': _taskNotesController.text.trim(),
+            'time': _selectedTime,
           });
         }
         _sortTasks();
@@ -366,6 +400,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _editingIndex = index;
       final task = _tasks[index];
       _taskNotesController.text = task['notes'] ?? '';
+      _selectedTime = _tasks[index]['time'];
     });
     _openTaskDialog(index: index);
   }
