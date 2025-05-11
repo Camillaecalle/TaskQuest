@@ -1,3 +1,5 @@
+// lib/screens/authentication_ui.dart
+
 import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
@@ -5,8 +7,18 @@ import 'sign_up_ui.dart';
 import 'task_manager_page.dart';
 import '../services/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../theme.dart';  // for AppTheme
 
 class AuthenticationUI extends StatefulWidget {
+  final AppTheme currentTheme;
+  final ValueChanged<AppTheme> onThemeChanged;
+
+  const AuthenticationUI({
+    Key? key,
+    required this.currentTheme,
+    required this.onThemeChanged,
+  }) : super(key: key);
+
   @override
   _AuthenticationUIState createState() => _AuthenticationUIState();
 }
@@ -15,8 +27,8 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  final AuthenticationService _authService = AuthenticationService(FirebaseAuth.instance);
+  final AuthenticationService _authService =
+  AuthenticationService(FirebaseAuth.instance);
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +68,10 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 ),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter your email';
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) return 'Enter a valid email';
+                  if (value == null || value.isEmpty)
+                    return 'Please enter your email';
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value))
+                    return 'Enter a valid email';
                   return null;
                 },
               ),
@@ -80,7 +94,8 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 ),
                 obscureText: true,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter your password';
+                  if (value == null || value.isEmpty)
+                    return 'Please enter your password';
                   return null;
                 },
               ),
@@ -93,13 +108,19 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                   if (_formKey.currentState?.validate() ?? false) {
                     final email = _emailController.text.trim();
                     final password = _passwordController.text;
-
-                    final result = await _authService.signIn(email: email, password: password);
-
+                    final result = await _authService.signIn(
+                      email: email,
+                      password: password,
+                    );
                     if (result == "Signed in") {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => TaskManagerPage()),
+                        MaterialPageRoute(
+                          builder: (context) => TaskManagerPage(
+                            currentTheme: widget.currentTheme,
+                            onThemeChanged: widget.onThemeChanged,
+                          ),
+                        ),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +142,9 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignUpUI()),
+                        MaterialPageRoute(
+                          builder: (context) => SignUpUI(), // removed theme args
+                        ),
                       );
                     },
                     child: Text(
