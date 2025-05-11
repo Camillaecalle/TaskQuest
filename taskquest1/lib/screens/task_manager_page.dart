@@ -7,7 +7,6 @@ import 'calendar_page.dart';
 class TaskManagerPage extends StatefulWidget {
   final AppTheme currentTheme;
   final ValueChanged<AppTheme> onThemeChanged;
-
   const TaskManagerPage({
     Key? key,
     required this.currentTheme,
@@ -30,12 +29,14 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
 
   String _sortOrder = 'Due Date';
   DateTime? _selectedDueDate;
+  TimeOfDay? _selectedDueTime;
   String _selectedPriority = 'Medium';
   int? _editingIndex;
   double _progress = 0.0;
   int _currentIndex = 0;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+
 
   @override
   void initState() {
@@ -62,12 +63,23 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     if (picked != null) setState(() => _selectedDueDate = picked);
   }
 
+  Future<void> _pickDueTime() async {
+    final now = TimeOfDay.now();
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedDueTime ?? now,
+    );
+    if (picked != null) setState(() => _selectedDueTime = picked);
+  }
+
   void _openTaskDialog({int? index}) {
     if (index != null) {
       _editingIndex = index;
       final task = _tasks[index];
       _taskController.text = task['task'];
-      _selectedDueDate = task['dueDate'];
+      final due = task['dueDate'] as DateTime;
+      _selectedDueDate = DateTime(due.year, due.month, due.day);
+      _selectedDueTime = TimeOfDay(hour: due.hour, minute: due.minute);
       _selectedPriority = task['priority'];
       _taskNotesController.text = task['notes'] ?? '';
     } else {
@@ -75,6 +87,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _taskController.clear();
       _taskNotesController.clear();
       _selectedDueDate = null;
+      _selectedDueTime = null;
       _selectedPriority = 'Medium';
     }
 
@@ -118,6 +131,15 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
                               .secondary),
                           onTap: _pickDueDate,
                         ),
+                        ListTile(
+                          title: Text(
+                            _selectedDueTime == null
+                                ? 'Select Due Time'
+                                : 'Time: ${_selectedDueTime!.format(context)}',
+                          ),
+                          trailing: Icon(Icons.access_time, color: Theme.of(context).colorScheme.secondary),
+                          onTap: _pickDueTime,
+                        ),
                         SizedBox(height: 12),
                         DropdownButtonFormField<String>(
                           value: _selectedPriority,
@@ -157,16 +179,22 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
 
   void _addOrEditTask() {
     final text = _taskController.text.trim();
-    if (text.isEmpty || _selectedDueDate == null) return;
+    if (text.isEmpty || _selectedDueDate == null || _selectedDueTime == null) return;
+
+    final dueDateTime = DateTime(
+      _selectedDueDate!.year,
+      _selectedDueDate!.month,
+      _selectedDueDate!.day,
+      _selectedDueTime!.hour,
+      _selectedDueTime!.minute,
+    );
 
     final entry = {
       'id': _editingIndex != null
           ? _tasks[_editingIndex!]['id']
-          : DateTime
-          .now()
-          .millisecondsSinceEpoch,
+          : DateTime.now().millisecondsSinceEpoch,
       'task': text,
-      'dueDate': _selectedDueDate!,
+      'dueDate': dueDateTime,
       'priority': _selectedPriority,
       'completed': false,
       'notes': _taskNotesController.text.trim(),
@@ -321,7 +349,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Due: ${DateFormat('MMM dd, yyyy').format(task['dueDate'])}'),
+            Text('Due: ${DateFormat('MMM dd, yyyy – hh:mm a').format(task['dueDate'])}'),
             if (task['notes'] != null && task['notes'].isNotEmpty)
               Text('Notes: ${task['notes']}'),
           ],

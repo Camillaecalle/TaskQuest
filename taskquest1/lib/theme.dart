@@ -74,17 +74,17 @@ final Map<AppTheme, ThemeData> appThemeData = {
   ),
 
   AppTheme.HighContrast: ThemeData(
-    brightness: Brightness.dark,
-    primaryColor: Colors.yellow,
-    scaffoldBackgroundColor: Colors.black,
+    brightness: Brightness.light,
+    primaryColor: Colors.pink,
+    scaffoldBackgroundColor: Colors.pink[50],
     textTheme: const TextTheme(
       bodyLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
       bodyMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.yellow,
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.pink,
+        foregroundColor: Color(0xFFFCE4EC),
       ),
     ),
   ),
