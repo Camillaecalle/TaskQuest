@@ -5,22 +5,42 @@ import 'components/button_widget.dart';
 import 'calendar_page.dart';
 import 'leaderboard_page.dart';
 import 'settings_page.dart';
+import 'avatar_design_page.dart'; // <<< NEW IMPORT
 
 class TaskManagerPage extends StatefulWidget {
   @override
   _TaskManagerPageState createState() => _TaskManagerPageState();
 }
 
-List<Map<String, dynamic>> _highPriorityTasks = [];
-List<Map<String, dynamic>> _mediumPriorityTasks = [];
-List<Map<String, dynamic>> _lowPriorityTasks = [];
-
 class _TaskManagerPageState extends State<TaskManagerPage> {
+  List<Map<String, dynamic>> _highPriorityTasks = [];
+  List<Map<String, dynamic>> _mediumPriorityTasks = [];
+  List<Map<String, dynamic>> _lowPriorityTasks = [];
+  // 🐢 Avatar data
+// Avatar data – all immediately initialized:
+  final List<String> _avatarImages = [
+    'assets/avatars/turtle.png',
+    'assets/avatars/giraffe.png',
+    'assets/avatars/Cat.png',
+    'assets/avatars/dolphin.png',
+    'assets/avatars/cow.png',
+    'assets/avatars/panda.png',
+    'assets/avatars/zebra.png',
+  ];
+
+// First 3 unlocked, others locked
+  final List<bool> _unlockedAvatars = [true, true, true, false, false, false, false];
+// Unlock cost per avatar (0 for defaults)
+  final List<int> _unlockCosts = [0, 0, 0, 20, 50, 70, 100];
+
+  // Current avatar and user points
+  String _currentAvatar = 'assets/avatars/turtle.png';
+  int _userPoints = 0;
+
   final List<Map<String, dynamic>> _completedTasks = [];
   final List<Map<String, dynamic>> _tasks = [];
   final TextEditingController _taskController = TextEditingController();
   final TextEditingController _taskNotesController = TextEditingController();
-
   String _sortOrder = 'Due Date';
   DateTime? _selectedDueDate;
   String _selectedPriority = 'Medium';
@@ -29,7 +49,6 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   int _currentIndex = 0;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  int _userPoints = 0; // 🟡 Track user points
 
   void _calculateProgress() {
     int completedCount = _completedTasks.length;
@@ -496,9 +515,40 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: Text('TaskQuest'),
         backgroundColor: primaryGreen,
         centerTitle: true,
+        leading: GestureDetector(
+          onTap: () async {
+            final selectedIndex = await Navigator.push<int>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AvatarDesignPage(
+                  avatarImages: _avatarImages,
+                  unlockedAvatars: _unlockedAvatars,
+                  unlockCosts: _unlockCosts,
+                  userPoints: _userPoints,
+                ),
+              ),
+            );
+            if (selectedIndex != null) {
+              setState(() {
+                if (!_unlockedAvatars[selectedIndex]) {
+                  _unlockedAvatars[selectedIndex] = true;
+                  _userPoints -= _unlockCosts[selectedIndex];
+                }
+                _currentAvatar = _avatarImages[selectedIndex];
+              });
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              backgroundImage: AssetImage(_currentAvatar),
+            ),
+          ),
+        ),
       ),
       body: _buildTabContent(_currentIndex),
       floatingActionButton: _currentIndex == 0
@@ -521,6 +571,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       ),
     );
   }
+
+
 
   Widget _buildNavBarItemIcon(int index, IconData iconData) {
     bool isSelected = _currentIndex == index;
