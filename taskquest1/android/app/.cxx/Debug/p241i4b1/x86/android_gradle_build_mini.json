@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/kareema/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/kareema/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/kareema/Downloads/TaskQuest/taskquest1/android/app/.cxx/Debug/p241i4b1/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/kareema/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/kareema/Downloads/TaskQuest/taskquest1/android/app/.cxx/Debug/p241i4b1/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

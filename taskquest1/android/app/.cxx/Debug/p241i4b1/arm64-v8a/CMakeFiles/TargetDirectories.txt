@@ -1,0 +1,2 @@
+/Users/kareema/Downloads/TaskQuest/taskquest1/android/app/.cxx/Debug/p241i4b1/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/kareema/Downloads/TaskQuest/taskquest1/android/app/.cxx/Debug/p241i4b1/arm64-v8a/CMakeFiles/rebuild_cache.dir
