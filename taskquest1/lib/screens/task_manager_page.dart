@@ -7,6 +7,10 @@ import 'calendar_page.dart';
 import 'leaderboard_page.dart';
 import 'settings_page.dart';
 import 'avatar_design_page.dart';
+import '/services/task_repository.dart';
+
+// final TaskRepository _taskRepo = TaskRepository();
+// final String _userId = "yourUserId"; // Replace with real auth UID when ready
 
 class TaskManagerPage extends StatefulWidget {
   final AppTheme currentTheme;
@@ -23,6 +27,9 @@ class TaskManagerPage extends StatefulWidget {
 }
 
 class _TaskManagerPageState extends State<TaskManagerPage> {
+  final TaskRepository _taskRepo = TaskRepository();
+  final String _userId = "yourUserId"; // Replace with actual auth UID
+
   final List<Map<String, dynamic>> _tasks = [];
   final List<Map<String, dynamic>> _completedTasks = [];
   List<Map<String, dynamic>> _highPriorityTasks = [];
@@ -183,9 +190,10 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     );
   }
 
-  void _addOrEditTask() {
+  Future<void> _addOrEditTask() async {
     final text = _taskController.text.trim();
-    if (text.isEmpty || _selectedDueDate == null || _selectedDueTime == null) return;
+    if (text.isEmpty || _selectedDueDate == null || _selectedDueTime == null)
+      return;
 
     final dueDateTime = DateTime(
       _selectedDueDate!.year,
@@ -196,7 +204,9 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     );
 
     final entry = {
-      'id': _editingIndex != null ? _tasks[_editingIndex!]['id'] : DateTime.now().millisecondsSinceEpoch,
+      'id': _editingIndex != null ? _tasks[_editingIndex!]['id'] : DateTime
+          .now()
+          .millisecondsSinceEpoch,
       'task': text,
       'dueDate': dueDateTime,
       'priority': _selectedPriority,
@@ -215,9 +225,9 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _calculateProgress();
     });
 
+    await _taskRepo.saveTask(_userId, entry);
     Navigator.pop(context);
   }
-
   void _toggleTaskCompletion(int index) {
     setState(() {
       final task = _tasks.removeAt(index);
