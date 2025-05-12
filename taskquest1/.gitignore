@@ -12,18 +12,22 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# IntelliJ/Android Studio
 *.iml
 *.ipr
 *.iws
 .idea/
+android/.gradle/
+android/.idea/
+android/app/.cxx/
+android/app/.cxx/Debug/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# Firebase and Google services
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
 
-# Flutter/Dart/Pub related
+# Flutter/Dart/Pub
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -33,39 +37,11 @@ migrate_working_dir/
 .pub/
 /build/
 
-# Symbolication related
+# Symbolication/Obfuscation
 app.*.symbols
-
-# Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
+# Android builds
 /android/app/debug
 /android/app/profile
 /android/app/release
-<<<<<<< HEAD
-# IDE and project settings
-
-
-
-# Firebase and Google services
-android/app/google-services.json
-ios/Runner/GoogleService-Info.plist
-macos/Runner/GoogleService-Info.plist
-
-# Android CMake and build files
-=======
-android/app/google-services.json
-# Android specific
-android/app/.cxx/
-android/.gradle/
-android/.idea/
-
-# IDE specific
-.idea/
-*.iml
->>>>>>> flutter_authentication
-android/app/.cxx/Debug/
-.idea/
-.idea/
-.idea/

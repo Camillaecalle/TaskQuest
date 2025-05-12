@@ -1,14 +1,48 @@
 import 'package:flutter/material.dart';
 import 'components/const/colors.dart';
 import 'avatar_design_page.dart';
-import 'manage_friends_page.dart'; // <<< ADD THIS IMPORT
+import 'manage_friends_page.dart';
+import '../theme.dart';  // for AppTheme enum
 
 class SettingsPage extends StatelessWidget {
+  final AppTheme currentTheme;
+  final ValueChanged<AppTheme> onThemeChanged;
+
+  const SettingsPage({
+    Key? key,
+    required this.currentTheme,
+    required this.onThemeChanged,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        // Theme selector
+        ListTile(
+          title: Text(
+            'Select App Theme',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          subtitle: DropdownButton<AppTheme>(
+            value: currentTheme,
+            isExpanded: true,
+            items: AppTheme.values.map((mode) {
+              final name = mode.toString().split('.').last;
+              return DropdownMenuItem(
+                value: mode,
+                child: Text(name),
+              );
+            }).toList(),
+            onChanged: (mode) {
+              if (mode != null) onThemeChanged(mode);
+            },
+          ),
+        ),
+        Divider(),
+
+        // Avatar selection
         ListTile(
           leading: Icon(Icons.person, color: primaryGreen),
           title: Text('Select Avatar'),
@@ -21,6 +55,8 @@ class SettingsPage extends StatelessWidget {
           },
         ),
         Divider(),
+
+        // Manage friends
         ListTile(
           leading: Icon(Icons.people, color: primaryGreen),
           title: Text('Manage Friends'),
@@ -28,11 +64,13 @@ class SettingsPage extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ManageFriendsPage()), // <<< Navigate to the real page
+              MaterialPageRoute(builder: (context) => ManageFriendsPage()),
             );
           },
         ),
         Divider(),
+
+        // Notification settings
         ListTile(
           leading: Icon(Icons.notifications, color: primaryGreen),
           title: Text('Notification Permissions'),
@@ -42,7 +80,7 @@ class SettingsPage extends StatelessWidget {
               context: context,
               builder: (context) => AlertDialog(
                 title: Text('Notification Permissions'),
-                content: Text('Need to implement / configure for permissions I think Ammar is doing this'),
+                content: Text('Need to implement / configure for permissions.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
