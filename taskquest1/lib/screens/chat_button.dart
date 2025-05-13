@@ -32,8 +32,10 @@ void showTaskAssistant(BuildContext context) {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                SizedBox(height: 40), // <-- Add this line to push the title downward
                 Text('Task Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 SizedBox(height: 12),
+
                 Expanded(
                   child: ListView(
                     shrinkWrap: true,
