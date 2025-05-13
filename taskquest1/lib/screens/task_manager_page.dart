@@ -8,6 +8,7 @@ import 'leaderboard_page.dart';
 import 'settings_page.dart';
 import 'avatar_design_page.dart';
 import '/services/task_repository.dart';
+import 'chat_button.dart';
 
 // final TaskRepository _taskRepo = TaskRepository();
 // final String _userId = "yourUserId"; // Replace with real auth UID when ready
@@ -529,12 +530,26 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       ),
       body: _buildTabContent(_currentIndex),
       floatingActionButton: _currentIndex == 0
-          ? FloatingActionButton(
-        backgroundColor: primaryGreen,
-        child: Icon(Icons.add, color: Colors.white),
-        onPressed: () => _openTaskDialog(),
+          ? Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: 'add_task',
+            backgroundColor: primaryGreen,
+            child: Icon(Icons.add, color: Colors.white),
+            onPressed: () => _openTaskDialog(),
+          ),
+          SizedBox(width: 16),
+          FloatingActionButton(
+            heroTag: 'chat_assistant',
+            backgroundColor: Colors.white,
+            child: Icon(Icons.chat_bubble_outline, color: primaryGreen),
+            onPressed: () => showTaskAssistant(context), // Make sure this function is defined
+          ),
+        ],
       )
           : null,
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
