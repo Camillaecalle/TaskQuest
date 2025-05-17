@@ -12,7 +12,8 @@ void main() async {
 
   // Safely load .env file
   try {
-    await dotenv.load();
+    await dotenv.load(fileName: ".env");
+    print('Loaded API Key: ${dotenv.env['OPENAI_API_KEY']}');
   } catch (e) {
     print('⚠️ .env file not found or failed to load: $e');
   }
