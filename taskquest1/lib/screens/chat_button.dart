@@ -1,5 +1,6 @@
 // lib/components/chat_button.dart
 import 'package:flutter/material.dart';
+import '../services/openai_service.dart';
 
 class ChatButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -14,9 +15,12 @@ class ChatButton extends StatelessWidget {
     );
   }
 }
+
+List<String> chatHistory = [];
+
 void showTaskAssistant(BuildContext context) {
   final TextEditingController _chatController = TextEditingController();
-  List<String> chatHistory = [];
+
 
   showModalBottomSheet(
     context: context,
@@ -53,12 +57,23 @@ void showTaskAssistant(BuildContext context) {
                     hintText: 'What’s your task?',
                     border: OutlineInputBorder(),
                   ),
-                  onSubmitted: (text) {
+                  onSubmitted: (text) async {
                     setState(() {
                       chatHistory.add('You: $text');
-                      chatHistory.add('Assistant: Try breaking it into 3 steps...');
-                      _chatController.clear();
                     });
+
+                    try {
+                      final response = await OpenAIService().getAssistantResponse(text);
+                      setState(() {
+                        chatHistory.add('Assistant: $response');
+                      });
+                    } catch (e) {
+                      setState(() {
+                        chatHistory.add('Assistant: Sorry, something went wrong.');
+                      });
+                    }
+
+                    _chatController.clear();
                   },
                 ),
               ],
@@ -67,5 +82,5 @@ void showTaskAssistant(BuildContext context) {
         },
       );
     },
-  );
+  ).whenComplete(() => _chatController.dispose());
 }

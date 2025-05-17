@@ -37,6 +37,8 @@ macos/Runner/GoogleService-Info.plist
 .pub/
 /build/
 
+.env
+
 # Symbolication/Obfuscation
 app.*.symbols
 app.*.map.json

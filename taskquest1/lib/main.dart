@@ -4,10 +4,19 @@ import 'screens/authentication_ui.dart';
 import 'screens/components/const/colors.dart';
 import 'screens/task_manager_page.dart';
 import 'theme.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // Safely load .env file
+  try {
+    await dotenv.load();
+  } catch (e) {
+    print('⚠️ .env file not found or failed to load: $e');
+  }
+
   runApp(MyApp());
 }
 
