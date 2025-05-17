@@ -21,7 +21,6 @@ List<String> chatHistory = [];
 void showTaskAssistant(BuildContext context) {
   final TextEditingController _chatController = TextEditingController();
 
-
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -32,25 +31,45 @@ void showTaskAssistant(BuildContext context) {
       return StatefulBuilder(
         builder: (context, setState) {
           return Padding(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewInsets.bottom + 16),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              MediaQuery.of(context).viewInsets.bottom + 16,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 40), // <-- Add this line to push the title downward
-                Text('Task Assistant', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Task Assistant',
+                      style:
+                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 12),
-
-                Expanded(
+                SizedBox(
+                  height: 200,
                   child: ListView(
                     shrinkWrap: true,
                     children: chatHistory
-                        .map((msg) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Text(msg),
-                    ))
+                        .map(
+                          (msg) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Text(msg),
+                      ),
+                    )
                         .toList(),
                   ),
                 ),
+                SizedBox(height: 12),
                 TextField(
                   controller: _chatController,
                   decoration: InputDecoration(
@@ -63,13 +82,15 @@ void showTaskAssistant(BuildContext context) {
                     });
 
                     try {
-                      final response = await OpenAIService().getAssistantResponse(text);
+                      final response =
+                      await OpenAIService().getAssistantResponse(text);
                       setState(() {
                         chatHistory.add('Assistant: $response');
                       });
                     } catch (e) {
                       setState(() {
-                        chatHistory.add('Assistant: Sorry, something went wrong.');
+                        chatHistory
+                            .add('Assistant: Sorry, something went wrong.');
                       });
                     }
 

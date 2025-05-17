@@ -16,18 +16,30 @@ class OpenAIService {
     final body = jsonEncode({
       "model": "gpt-3.5-turbo",
       "messages": [
-        {"role": "system", "content": "You are a helpful assistant that helps users break tasks into smaller steps."},
-        {"role": "user", "content": userInput}
+        {
+          "role": "system",
+          "content": "You are a helpful assistant that helps users break tasks into smaller steps."
+        },
+        {
+          "role": "user",
+          "content": userInput
+        }
       ],
     });
 
-    final response = await http.post(Uri.parse(url), headers: headers, body: body);
+    try {
+      final response = await http.post(Uri.parse(url), headers: headers, body: body);
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['choices'][0]['message']['content'].trim();
-    } else {
-      throw Exception('Failed to get response: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['choices'][0]['message']['content'].trim();
+      } else {
+        print('❌ OpenAI API error: ${response.statusCode} - ${response.body}');
+        throw Exception('Failed to get response from OpenAI');
+      }
+    } catch (e) {
+      print('❌ Exception during OpenAI call: $e');
+      throw Exception('An error occurred: $e');
     }
   }
 }
