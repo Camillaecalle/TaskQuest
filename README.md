@@ -108,11 +108,11 @@ Build errors from notifications → Notification functionality is planned and cu
 
 Implemented testing for: 
 
-Authentication Services
+- Authentication Services
 
-OpenAI Services
+- OpenAI Services
 
-Task Repository (Task Saving per user)
+- Task Repository (Task Saving per user)
 
 ### 🧠 Future Improvements
 
