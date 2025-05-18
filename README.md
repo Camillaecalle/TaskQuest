@@ -1,6 +1,6 @@
 # 🐢 TaskQuest
 
-TaskQuest is a gamified task management mobile app built with **Flutter** and powered by **Firebase**. Users can create, edit, and track tasks by priority, earn points for completing tasks, and customize their avatars. It also includes a built-in assistant that helps break down tasks using OpenAI.
+TaskQuest is a gamified task management mobile app built with **Flutter** and powered by **Firebase**. Users can create, edit, and track tasks by priority, earn points for completing tasks, and earn / unlock their avatars. It also includes a built-in assistant that helps break down tasks using OpenAI.
 
 ---
 
