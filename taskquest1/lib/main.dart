@@ -3,45 +3,43 @@ import 'package:firebase_core/firebase_core.dart';
 import 'screens/authentication_ui.dart';
 import 'screens/components/const/colors.dart';
 import 'screens/task_manager_page.dart';
+import 'theme.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensures binding before async call
-  await Firebase.initializeApp(); // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // Safely load .env file
+  try {
+    await dotenv.load(fileName: ".env");
+    print('Loaded API Key: ${dotenv.env['OPENAI_API_KEY']}');
+  } catch (e) {
+    print('⚠️ .env file not found or failed to load: $e');
+  }
+
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  AppTheme _currentTheme = AppTheme.Default;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: primaryGreen, // Set primary color to the defined green
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: secondaryGreen, // Set accent color using secondary
-        ),
-        scaffoldBackgroundColor: backgroundColor, // Set background color
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: textColor),
-          bodyMedium: TextStyle(color: textColor),
-          headlineLarge: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
-          headlineMedium: TextStyle(color: darkGreen, fontWeight: FontWeight.bold),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryGreen,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            elevation: 0,
-          ),
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      theme: appThemeData[_currentTheme],
+      home: TaskManagerPage(
+        currentTheme: _currentTheme,
+        onThemeChanged: (newTheme) {
+          setState(() => _currentTheme = newTheme);
+        },
       ),
-      home: TaskManagerPage(),
     );
   }
 }
-
-

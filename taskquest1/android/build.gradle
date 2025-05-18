@@ -5,9 +5,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'  // Ensure you are using the correct Gradle plugin version
-        classpath 'com.google.gms:google-services:4.3.15'  // Add the classpath for Firebase and Google services
-        // Other classpaths for your project can go here
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'com.google.gms:google-services:4.3.15'
     }
 }
 
