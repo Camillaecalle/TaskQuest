@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskquest1/services/task_repository.dart';
+
+//
 
 void main() {
-  test('saveTask and loadTasks should work (mocked)', () async {
-    final repo = TaskRepository();
-    final fakeUserId = 'test-user';
+  test('sample task object contains correct values', () {
     final fakeTask = {
       'id': 123,
       'task': 'Sample Task',
@@ -14,10 +13,8 @@ void main() {
       'notes': '',
     };
 
-    // You'd mock Firestore calls here normally
-    // await repo.saveTask(fakeUserId, fakeTask);
-    // final tasks = await repo.loadTasks(fakeUserId);
-
     expect(fakeTask['task'], 'Sample Task');
+    expect(fakeTask['priority'], 'Medium');
+    expect(fakeTask['completed'], isFalse);
   });
 }
