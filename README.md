@@ -100,15 +100,15 @@ Build errors from notifications → Notification functionality is planned and cu
 
 ### 🧠 Future Improvements
 
-Push notifications for task reminders
+📲 Push notifications for task reminders
 
-Calendar Syncing
+📅 Calendar syncing
 
-Social Authentication (Ex. Google Sign)
+🔐 Social authentication (Ex: Google Sign-In)
 
-Analytics dashboard for task history
+📊 Analytics dashboard for task history
 
-Friends & team progress sharing
+👥 Friends & team progress sharing
 
 ### 👩‍💻 Author
 Camilla Calle
