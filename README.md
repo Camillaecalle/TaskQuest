@@ -112,3 +112,4 @@ Build errors from notifications → Notification functionality is planned and cu
 
 ### 👩‍💻 Author
 Camilla Calle
+[GitHub](https://github.com/Camillaecalle)
