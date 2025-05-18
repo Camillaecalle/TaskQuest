@@ -98,6 +98,14 @@ Firestore permission denied → Double-check your Firebase Firestore security ru
 
 Build errors from notifications → Notification functionality is planned and currently disabled due to compatibility issues
 
+### 🎖️ Testing 
+
+Implemented testing for: 
+
+Authentication Services
+OpenAI Services
+Task Repository (Task Saving per user)
+
 ### 🧠 Future Improvements
 
 📲 Push notifications for task reminders
