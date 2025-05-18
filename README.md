@@ -44,7 +44,7 @@ TaskQuest is a gamified task management mobile app built with **Flutter** and po
 
 ### ✅ Prerequisites
 - Flutter SDK 3.6+
-- Android Studio or Xcode (for Android/iOS emulators)
+- Android Studio
 - Firebase project setup
 - OpenAI API key
 
