@@ -98,7 +98,7 @@ Run this command in your terminal
 
 - “.env file not found” → Make sure it’s declared under flutter/assets: in pubspec.yaml
 
-- OpenAI 429 Error → You’ve likely exceeded your free quota. Contact @Camillaecalle for more OPenAI funds. 
+- OpenAI 429 Error → You’ve likely exceeded your quota. Contact @Camillaecalle for more OPenAI funds. 
 
 - Firestore permission denied → Double-check your Firebase Firestore security rules
 
