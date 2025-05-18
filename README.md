@@ -116,15 +116,15 @@ Implemented testing for:
 
 ### 🧠 Future Improvements
 
-📲 Push notifications for task reminders
+- 📲 Push notifications for task reminders
 
-📅 Calendar syncing
+- 📅 Calendar syncing
 
-🔐 Social authentication (Ex: Google Sign-In)
+- 🔐 Social authentication (Ex: Google Sign-In)
 
-📊 Analytics dashboard for task history
+- 📊 Analytics dashboard for task history
 
-👥 Friends & team progress sharing
+- 👥 Friends & team progress sharing
 
 ### 👩‍💻 Author
 
