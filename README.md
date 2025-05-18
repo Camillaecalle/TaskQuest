@@ -73,11 +73,17 @@ Ensure you dont leak your secret key by adding .env to your .gitignore.
 ### ⚙️ Firebase Setup
 
 Make sure you’ve done the following:
+
 Enable Email/Password authentication in the Firebase console
+
 Add your Firebase files:
+
 google-services.json → android/app/
+
 GoogleService-Info.plist → ios/Runner/
+
 Confirm Firebase initialization in main.dart using:
+
  ```bash 
 await Firebase.initializeApp();
 ```
@@ -103,7 +109,9 @@ Build errors from notifications → Notification functionality is planned and cu
 Implemented testing for: 
 
 Authentication Services
+
 OpenAI Services
+
 Task Repository (Task Saving per user)
 
 ### 🧠 Future Improvements
