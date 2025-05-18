@@ -111,5 +111,5 @@ Build errors from notifications → Notification functionality is planned and cu
 👥 Friends & team progress sharing
 
 ### 👩‍💻 Author
-Camilla Calle
-[GitHub](https://github.com/Camillaecalle)
+
+[Camilla Calle](https://github.com/Camillaecalle)
