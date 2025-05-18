@@ -74,15 +74,15 @@ Ensure you dont leak your secret key by adding .env to your .gitignore.
 
 Make sure you’ve done the following:
 
-Enable Email/Password authentication in the Firebase console
+- Enable Email/Password authentication in the Firebase console
 
-Add your Firebase files:
+- Add your Firebase files:
 
-google-services.json → android/app/
+- google-services.json → android/app/
 
-GoogleService-Info.plist → ios/Runner/
+- GoogleService-Info.plist → ios/Runner/
 
-Confirm Firebase initialization in main.dart using:
+- Confirm Firebase initialization in main.dart using:
 
  ```bash 
 await Firebase.initializeApp();
@@ -96,13 +96,13 @@ Run this command in your terminal
 
 ### 🐛 Troubleshooting
 
-“.env file not found” → Make sure it’s declared under flutter/assets: in pubspec.yaml
+- “.env file not found” → Make sure it’s declared under flutter/assets: in pubspec.yaml
 
-OpenAI 429 Error → You’ve likely exceeded your free quota. Contact @Camillaecalle for more OPenAI funds. 
+- OpenAI 429 Error → You’ve likely exceeded your free quota. Contact @Camillaecalle for more OPenAI funds. 
 
-Firestore permission denied → Double-check your Firebase Firestore security rules
+- Firestore permission denied → Double-check your Firebase Firestore security rules
 
-Build errors from notifications → Notification functionality is planned and currently disabled due to compatibility issues
+- Build errors from notifications → Notification functionality is planned and currently disabled due to compatibility issues
 
 ### 🎖️ Testing 
 
