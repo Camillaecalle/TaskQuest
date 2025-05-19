@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appThemeData[_currentTheme],
-      home: TaskManagerPage(
+      home: AuthenticationUI(
         currentTheme: _currentTheme,
         onThemeChanged: (newTheme) {
           setState(() => _currentTheme = newTheme);

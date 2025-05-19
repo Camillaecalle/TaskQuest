@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth;
@@ -18,10 +19,24 @@ class AuthenticationService {
     }
   }
 
-  // Sign up method
+  // Sign up method with Firestore user profile creation
   Future<String?> signUp({required String email, required String password}) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Create user document in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+        'email': email,
+        'points': 0,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
       return "Signed up";
     } on FirebaseAuthException catch (e) {
       return e.message;

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../theme.dart';
@@ -29,7 +31,7 @@ class TaskManagerPage extends StatefulWidget {
 
 class _TaskManagerPageState extends State<TaskManagerPage> {
   final TaskRepository _taskRepo = TaskRepository();
-  final String _userId = "yourUserId"; // Replace with actual auth UID
+  final String _userId = FirebaseAuth.instance.currentUser!.uid;
 
   final List<Map<String, dynamic>> _tasks = [];
   final List<Map<String, dynamic>> _completedTasks = [];
@@ -229,7 +231,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     await _taskRepo.saveTask(_userId, entry);
     Navigator.pop(context);
   }
-  void _toggleTaskCompletion(int index) {
+
+  void _toggleTaskCompletion(int index) async {
     setState(() {
       final task = _tasks.removeAt(index);
       task['completed'] = true;
@@ -238,7 +241,26 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _awardPoints(task['priority']);
       _calculateProgress();
     });
+
+    // Save updated task
+    await _taskRepo.saveTask(_userId, _completedTasks.last);
+
+    // 🔥 Update points in Firestore
+    int earnedPoints = switch (_completedTasks.last['priority']) {
+      'High' => 10,
+      'Medium' => 5,
+      'Low' => 2,
+      _ => 0,
+    };
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_userId)
+        .update({
+      'points': FieldValue.increment(earnedPoints),
+    });
   }
+
 
   void _unmarkTask(int index) {
     setState(() {
