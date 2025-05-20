@@ -9,6 +9,7 @@ import 'calendar_page.dart';
 import 'leaderboard_page.dart';
 import 'settings_page.dart';
 import 'avatar_design_page.dart';
+import 'package:taskquest1/services/calendar_service.dart';
 import 'manage_friends_page.dart';
 import '/services/task_repository.dart';
 import 'chat_button.dart';
@@ -30,6 +31,7 @@ class TaskManagerPage extends StatefulWidget {
 class _TaskManagerPageState extends State<TaskManagerPage> {
   final TaskRepository _taskRepo = TaskRepository();
   final String _userId = FirebaseAuth.instance.currentUser!.uid;
+  final CalendarService _calendarService = CalendarService();
 
   final List<Map<String, dynamic>> _tasks = [];
   final List<Map<String, dynamic>> _completedTasks = [];
@@ -50,7 +52,15 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     'assets/avatars/panda.png',
     'assets/avatars/zebra.png',
   ];
-  final List<bool> _unlockedAvatars = [true, true, true, false, false, false, false];
+  final List<bool> _unlockedAvatars = [
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+  ];
   final List<int> _unlockCosts = [0, 0, 0, 20, 50, 70, 100];
   String _currentAvatar = 'assets/avatars/turtle.png';
   int _userPoints = 0;
@@ -142,7 +152,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text(_editingIndex == null ? 'Add Task' : 'Edit Task'),
           content: SingleChildScrollView(
             child: Column(
@@ -150,7 +161,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
               children: [
                 TextField(
                   controller: _taskController,
-                  decoration: InputDecoration(labelText: 'Enter a task', border: OutlineInputBorder()),
+                  decoration: InputDecoration(
+                      labelText: 'Enter a task', border: OutlineInputBorder()),
                 ),
                 SizedBox(height: 12),
                 ListTile(
@@ -170,7 +182,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
                 SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   value: _selectedPriority,
-                  decoration: InputDecoration(labelText: 'Priority', border: OutlineInputBorder()),
+                  decoration: InputDecoration(
+                      labelText: 'Priority', border: OutlineInputBorder()),
                   items: ['High', 'Medium', 'Low']
                       .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                       .toList(),
@@ -213,9 +226,9 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     );
 
     final entry = {
-      'id': _editingIndex != null ? _tasks[_editingIndex!]['id'] : DateTime
-          .now()
-          .millisecondsSinceEpoch,
+      'id': _editingIndex != null
+          ? _tasks[_editingIndex!]['id']
+          : DateTime.now().millisecondsSinceEpoch,
       'task': text,
       'dueDate': dueDateTime,
       'priority': _selectedPriority,
@@ -223,6 +236,7 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       'notes': _taskNotesController.text.trim(),
     };
 
+    // Optimistically update UI
     setState(() {
       if (_editingIndex != null) {
         _tasks[_editingIndex!] = entry;
@@ -234,8 +248,57 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _calculateProgress();
     });
 
-    await _taskRepo.saveTask(_userId, entry);
-    Navigator.pop(context);
+    try {
+      await _taskRepo.saveTask(_userId, entry);
+
+      // Sync with Google Calendar if user is signed in
+      bool googleSignedIn = await _calendarService.isSignedIn();
+      if (googleSignedIn) {
+        try {
+          String? eventId = await _calendarService.createTaskEvent(
+            title: entry['task'] as String,
+            description: entry['notes'] as String?,
+            startTime: entry['dueDate'] as DateTime,
+            endTime: (entry['dueDate'] as DateTime)
+                .add(const Duration(hours: 1)), // Default 1 hour duration
+          );
+          if (eventId != null && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Task synced to Google Calendar.')),
+            );
+          } else if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text('Could not sync task to Google Calendar.')),
+            );
+          }
+        } catch (e) {
+          print('Error syncing task to Google Calendar: $e');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Error syncing to Google Calendar: ${e.toString()}')),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      // Handle Firestore save error if necessary, or revert optimistic UI update
+      print("Error saving task to Firestore: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving task: ${e.toString()}')),
+        );
+      }
+      // Optionally revert UI changes if Firestore save fails
+      // For simplicity, not implemented here, but consider for production apps
+      return; // Don't pop if save failed
+    }
+
+    if (mounted) {
+      Navigator.pop(context); // Pop dialog
+    }
   }
 
   void _toggleTaskCompletion(int index) async {
@@ -259,14 +322,10 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       _ => 0,
     };
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(_userId)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(_userId).update({
       'points': FieldValue.increment(earnedPoints),
     });
   }
-
 
   void _unmarkTask(int index) {
     setState(() {
@@ -297,7 +356,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
 
   void _groupTasksByPriority() {
     _highPriorityTasks = _tasks.where((t) => t['priority'] == 'High').toList();
-    _mediumPriorityTasks = _tasks.where((t) => t['priority'] == 'Medium').toList();
+    _mediumPriorityTasks =
+        _tasks.where((t) => t['priority'] == 'Medium').toList();
     _lowPriorityTasks = _tasks.where((t) => t['priority'] == 'Low').toList();
   }
 
@@ -314,13 +374,15 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     }
   }
 
-  Widget _buildPrioritySection(String title, Color color, List<Map<String, dynamic>> tasks) {
+  Widget _buildPrioritySection(
+      String title, Color color, List<Map<String, dynamic>> tasks) {
     final filtered = tasks.where((task) => !task['completed']).toList();
     if (filtered.isEmpty) return SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-      decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+          color: Colors.grey[300], borderRadius: BorderRadius.circular(8)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -333,7 +395,10 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             ),
             child: Text(
               title,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
             ),
           ),
           ...filtered.map((task) => _buildTaskCard(task)).toList(),
@@ -364,7 +429,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Due: ${DateFormat('MMM dd, yyyy').format(task['dueDate'])}'),
-            if (task['notes']?.isNotEmpty ?? false) Text('Notes: ${task['notes']}'),
+            if (task['notes']?.isNotEmpty ?? false)
+              Text('Notes: ${task['notes']}'),
           ],
         ),
         leading: Checkbox(
@@ -374,8 +440,12 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(icon: Icon(Icons.edit, color: Colors.green), onPressed: () => _openTaskDialog(index: index)),
-            IconButton(icon: Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteTask(index)),
+            IconButton(
+                icon: Icon(Icons.edit, color: Colors.green),
+                onPressed: () => _openTaskDialog(index: index)),
+            IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _deleteTask(index)),
           ],
         ),
       ),
@@ -392,14 +462,16 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             children: [
               Icon(Icons.star, color: Colors.amber),
               SizedBox(width: 6),
-              Text('Points: $_userPoints', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('Points: $_userPoints',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
         Container(
           width: MediaQuery.of(context).size.width * 0.8,
           height: 20,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey[300]),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10), color: Colors.grey[300]),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
@@ -410,7 +482,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
           ),
         ),
         SizedBox(height: 8),
-        Text('Progress: ${(_progress * 100).toStringAsFixed(0)}%', style: TextStyle(fontSize: 16)),
+        Text('Progress: ${(_progress * 100).toStringAsFixed(0)}%',
+            style: TextStyle(fontSize: 16)),
       ],
     );
   }
@@ -432,7 +505,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: DropdownButton<String>(
                 value: _sortOrder,
                 isExpanded: true,
@@ -444,7 +518,8 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
                   });
                 },
                 items: ['Due Date', 'Recently Added']
-                    .map((option) => DropdownMenuItem(value: option, child: Text(option)))
+                    .map((option) =>
+                        DropdownMenuItem(value: option, child: Text(option)))
                     .toList(),
               ),
             ),
@@ -453,9 +528,12 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildPrioritySection('PRIORITY: HIGH', Colors.red, _highPriorityTasks),
-                    _buildPrioritySection('PRIORITY: MEDIUM', Colors.orange, _mediumPriorityTasks),
-                    _buildPrioritySection('PRIORITY: LOW', Colors.green, _lowPriorityTasks),
+                    _buildPrioritySection(
+                        'PRIORITY: HIGH', Colors.red, _highPriorityTasks),
+                    _buildPrioritySection('PRIORITY: MEDIUM', Colors.orange,
+                        _mediumPriorityTasks),
+                    _buildPrioritySection(
+                        'PRIORITY: LOW', Colors.green, _lowPriorityTasks),
                   ],
                 ),
               ),
@@ -480,29 +558,30 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
   }
 
   Widget _buildCompletedTasksList() {
-    _completedTasks.sort((a, b) => b['completedDate'].compareTo(a['completedDate']));
+    _completedTasks
+        .sort((a, b) => b['completedDate'].compareTo(a['completedDate']));
     return _completedTasks.isEmpty
         ? Center(child: Text('No completed tasks yet.'))
         : ListView.builder(
-      itemCount: _completedTasks.length,
-      itemBuilder: (context, index) {
-        final task = _completedTasks[index];
-        return Card(
-          child: ListTile(
-            title: Text(task['task']),
-            subtitle: Text(
-              'Completed on: ${DateFormat('MMM dd, yyyy').format(task['completedDate'])}',
-              style: const TextStyle(fontSize: 14),
-            ),
-            leading: Icon(Icons.check_circle, color: Colors.green),
-            trailing: IconButton(
-              icon: Icon(Icons.undo, color: Colors.blue),
-              onPressed: () => _unmarkTask(index),
-            ),
-          ),
-        );
-      },
-    );
+            itemCount: _completedTasks.length,
+            itemBuilder: (context, index) {
+              final task = _completedTasks[index];
+              return Card(
+                child: ListTile(
+                  title: Text(task['task']),
+                  subtitle: Text(
+                    'Completed on: ${DateFormat('MMM dd, yyyy').format(task['completedDate'])}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  leading: Icon(Icons.check_circle, color: Colors.green),
+                  trailing: IconButton(
+                    icon: Icon(Icons.undo, color: Colors.blue),
+                    onPressed: () => _unmarkTask(index),
+                  ),
+                ),
+              );
+            },
+          );
   }
 
   Widget _buildNavBarItemIcon(int index, IconData iconData) {
@@ -580,34 +659,39 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       body: _buildTabContent(_currentIndex),
       floatingActionButton: _currentIndex == 0
           ? Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: 'add_task',
-            backgroundColor: primaryGreen,
-            child: Icon(Icons.add, color: Colors.white),
-            onPressed: () => _openTaskDialog(),
-          ),
-          SizedBox(width: 16),
-          FloatingActionButton(
-            heroTag: 'chat_assistant',
-            backgroundColor: Colors.white,
-            child: Icon(Icons.chat_bubble_outline, color: primaryGreen),
-            onPressed: () => showTaskAssistant(context), // Make sure this function is defined
-          ),
-        ],
-      )
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'add_task',
+                  backgroundColor: primaryGreen,
+                  child: Icon(Icons.add, color: Colors.white),
+                  onPressed: () => _openTaskDialog(),
+                ),
+                SizedBox(width: 16),
+                FloatingActionButton(
+                  heroTag: 'chat_assistant',
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.chat_bubble_outline, color: primaryGreen),
+                  onPressed: () => showTaskAssistant(
+                      context), // Make sure this function is defined
+                ),
+              ],
+            )
           : null,
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         items: [
-          BottomNavigationBarItem(icon: _buildNavBarItemIcon(0, Icons.home), label: ''),
-          BottomNavigationBarItem(icon: _buildNavBarItemIcon(1, Icons.calendar_today), label: ''),
-          BottomNavigationBarItem(icon: _buildNavBarItemIcon(2, Icons.check_circle), label: ''),
-          BottomNavigationBarItem(icon: _buildNavBarItemIcon(3, Icons.leaderboard), label: ''),
-          BottomNavigationBarItem(icon: _buildNavBarItemIcon(4, Icons.settings), label: ''),
+          BottomNavigationBarItem(
+              icon: _buildNavBarItemIcon(0, Icons.home), label: ''),
+          BottomNavigationBarItem(
+              icon: _buildNavBarItemIcon(1, Icons.calendar_today), label: ''),
+          BottomNavigationBarItem(
+              icon: _buildNavBarItemIcon(2, Icons.check_circle), label: ''),
+          BottomNavigationBarItem(
+              icon: _buildNavBarItemIcon(3, Icons.leaderboard), label: ''),
+          BottomNavigationBarItem(
+              icon: _buildNavBarItemIcon(4, Icons.settings), label: ''),
         ],
       ),
     );

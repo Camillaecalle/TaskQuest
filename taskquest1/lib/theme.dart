@@ -4,22 +4,23 @@ import 'screens/components/const/colors.dart';
 
 /// Enumerate all modes you plan to support
 enum AppTheme { Default, Dark, Blue }
+
 /// Map each mode to its ThemeData
 final Map<AppTheme, ThemeData> appThemeData = {
   AppTheme.Default: ThemeData(
     brightness: Brightness.light,
     primaryColor: darkGreen,
-    scaffoldBackgroundColor: Color(0xFFA5D6A7),      // ← light green 200
+    scaffoldBackgroundColor: Color(0xFFA5D6A7), // ← light green 200
     colorScheme: ColorScheme.light(
       primary: primaryGreen,
-      secondary: secondaryGreen,
-      background: Color(0xFFA5D6A7),                 // ← same light green
+      secondary: secondaryGreen, // ← same light green
       surface: Colors.white,
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: textColor),
       bodyMedium: TextStyle(color: textColor),
-      headlineLarge: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
+      headlineLarge:
+          TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
       headlineMedium: TextStyle(color: darkGreen, fontWeight: FontWeight.bold),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -33,7 +34,6 @@ final Map<AppTheme, ThemeData> appThemeData = {
       ),
     ),
   ),
-
   AppTheme.Dark: ThemeData(
     brightness: Brightness.dark,
     primaryColor: primaryGreen,
@@ -41,14 +41,15 @@ final Map<AppTheme, ThemeData> appThemeData = {
     colorScheme: ColorScheme.dark(
       primary: primaryGreen,
       secondary: secondaryGreen,
-      background: Colors.black,
       surface: Colors.grey[850]!,
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.white70),
       bodyMedium: TextStyle(color: Colors.white70),
-      headlineLarge: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
-      headlineMedium: TextStyle(color: secondaryGreen, fontWeight: FontWeight.bold),
+      headlineLarge:
+          TextStyle(color: primaryGreen, fontWeight: FontWeight.bold),
+      headlineMedium:
+          TextStyle(color: secondaryGreen, fontWeight: FontWeight.bold),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -61,7 +62,6 @@ final Map<AppTheme, ThemeData> appThemeData = {
       ),
     ),
   ),
-
   AppTheme.Blue: ThemeData(
     brightness: Brightness.light,
     primarySwatch: Colors.blue,
@@ -69,13 +69,21 @@ final Map<AppTheme, ThemeData> appThemeData = {
     colorScheme: ColorScheme.light(
       primary: Colors.blue,
       secondary: Colors.teal,
-      background: Colors.blue[50]!,
-      surface: Colors.white,
+    ),
+  ),
+  AppTheme.HighContrast: ThemeData(
+    brightness: Brightness.light,
+    primaryColor: Colors.pink,
+    scaffoldBackgroundColor: Colors.pink[50],
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(
+          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+      bodyMedium: TextStyle(
+          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
     ),
   ),
-
 };
