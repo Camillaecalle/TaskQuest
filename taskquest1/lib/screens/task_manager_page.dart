@@ -7,6 +7,7 @@ import 'calendar_page.dart';
 import 'leaderboard_page.dart';
 import 'settings_page.dart';
 import 'avatar_design_page.dart';
+import 'manage_friends_page.dart';
 
 class TaskManagerPage extends StatefulWidget {
   final AppTheme currentTheme;
@@ -91,7 +92,11 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       firstDate: now,
       lastDate: DateTime(2100),
     );
-    if (picked != null) setState(() => _selectedDueDate = picked);
+    if (picked != null) {
+      setState(() {
+        _selectedDueDate = picked;
+      });
+    }
   }
 
   Future<void> _pickDueTime() async {
@@ -100,7 +105,11 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       context: context,
       initialTime: _selectedDueTime ?? now,
     );
-    if (picked != null) setState(() => _selectedDueTime = picked);
+    if (picked != null) {
+      setState(() {
+        _selectedDueTime = picked;
+      });
+    }
   }
 
   void _openTaskDialog({int? index}) {
@@ -484,6 +493,16 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       appBar: AppBar(
         backgroundColor: primaryGreen,
         centerTitle: true,
+        title: Text(
+          switch (_currentIndex) {
+            0 => 'Task Manager',
+            1 => 'Calendar',
+            2 => 'Completed Tasks',
+            3 => 'Leaderboard',
+            4 => 'Settings',
+            _ => 'Task Manager',
+          },
+        ),
         leading: GestureDetector(
           onTap: () async {
             final selectedIndex = await Navigator.push<int>(
@@ -516,6 +535,17 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.group),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ManageFriendsPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: _buildTabContent(_currentIndex),
       floatingActionButton: _currentIndex == 0

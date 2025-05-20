@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:taskquest1/screens/sign_up_ui.dart';
 import 'screens/authentication_ui.dart';
 import 'screens/components/const/colors.dart';
 import 'screens/task_manager_page.dart';
@@ -24,7 +25,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appThemeData[_currentTheme],
-      home: TaskManagerPage(
+      home: AuthenticationUI(
         currentTheme: _currentTheme,
         onThemeChanged: (newTheme) {
           setState(() => _currentTheme = newTheme);

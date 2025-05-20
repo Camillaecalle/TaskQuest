@@ -5,8 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c6502725-b11b-435c-8fe6-5388c83e3051" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/arm64-v8a/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/arm64-v8a/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/armeabi-v7a/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/armeabi-v7a/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86_64/configure_fingerprint.bin" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/app/.cxx/Debug/p241i4b1/x86_64/configure_fingerprint.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/android/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/android/local.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/lib/screens/leaderboard_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/lib/screens/leaderboard_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/lib/screens/settings_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/lib/screens/settings_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/lib/screens/task_manager_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/lib/screens/task_manager_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taskquest1/lib/theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/taskquest1/lib/theme.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,7 +25,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/camillacalle/.android/avd/Medium_Phone_API_35.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/Users/kareema/.android/avd/Pixel_9_Pro_XL.avd)]" />
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -25,21 +34,21 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "snigdhaaaa"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;snigdhaaaa&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/Camillaecalle/TaskQuest.git",
-    "accountId": "2de13a08-c861-447a-8414-fbfd4504693f"
+    "accountId": "40bf02b2-0452-4a78-997e-1d157b2fe46e"
   }
 }]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2wxzDRgJLASbwhTy1XaS2TvfCgl" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -55,7 +64,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "Leaderboard",
+    "git-widget-placeholder": "merged-features",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/snigd/StudioProjects/TaskQuest/taskquest1",
     "show.migrate.to.gradle.popup": "false"
@@ -76,5 +85,16 @@
       <updated>1746997896403</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
