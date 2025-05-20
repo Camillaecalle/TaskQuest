@@ -4,10 +4,12 @@ import 'package:taskquest1/screens/sign_up_ui.dart';
 import 'screens/authentication_ui.dart';
 import 'theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await NotificationService().init();
 
   // Safely load .env file
   try {
