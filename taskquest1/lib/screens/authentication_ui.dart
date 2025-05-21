@@ -47,96 +47,96 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/images/green_guy.png',
-                  height: 250,
-                ),
-                SizedBox(height: 30),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/green_guy.png',
+                height: 250,
+              ),
+              SizedBox(height: 30),
 
-                // Email input
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryGreen),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: secondaryGreen),
-                    ),
+              // Email input
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'Enter your email',
+                  hintStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryGreen),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty)
-                      return 'Please enter your email';
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value))
-                      return 'Enter a valid email';
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-
-                // Password input
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    border: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: primaryGreen),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: secondaryGreen),
-                    ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryGreen),
                   ),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty)
-                      return 'Please enter your password';
-                    return null;
-                  },
                 ),
-                SizedBox(height: 20),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty)
+                    return 'Please enter your email';
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value))
+                    return 'Enter a valid email';
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
 
-                // Sign In Button
-                ButtonWidget(
-                  text: 'Sign In',
-                  onPressed: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      final email = _emailController.text.trim();
-                      final password = _passwordController.text;
-                      final result = await _authService.signIn(
-                        email: email,
-                        password: password,
-                      );
-                      if (result == "Signed in") {
+              // Password input
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintText: 'Enter your password',
+                  hintStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryGreen),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: secondaryGreen),
+                  ),
+                ),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty)
+                    return 'Please enter your password';
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+
+              // Sign In Button
+              ButtonWidget(
+                text: 'Sign In',
+                onPressed: () async {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    final email = _emailController.text.trim();
+                    final password = _passwordController.text;
+                    final result = await _authService.signIn(
+                      email: email,
+                      password: password,
+                    );
+                    if (result == "Signed in") {
                         Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TaskManagerPage(
-                              currentTheme: widget.currentTheme,
-                              onThemeChanged: widget.onThemeChanged,
-                            ),
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TaskManagerPage(
+                            currentTheme: widget.currentTheme,
+                            onThemeChanged: widget.onThemeChanged,
                           ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(result ?? 'Sign in failed')),
-                        );
-                      }
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(result ?? 'Sign in failed')),
+                      );
                     }
-                  },
-                ),
+                  }
+                },
+              ),
 
                 // SizedBox(height: 10), // Removed space for Google button
                 // Google Sign-In Button Removed
@@ -146,33 +146,33 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 //       text: 'Sign In with Google',
                 //       onPressed: _signInWithGoogle,
                 //     ),
-                SizedBox(height: 20),
+              SizedBox(height: 20),
 
-                // Sign up prompt
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Don't have an account?"),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignUpUI(), // removed theme args
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: primaryGreen,
-                          fontWeight: FontWeight.bold,
+              // Sign up prompt
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don't have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignUpUI(), // removed theme args
                         ),
+                      );
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: primaryGreen,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
+            ],
             ),
           ),
         ),

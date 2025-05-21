@@ -21,51 +21,93 @@ class NotificationService {
       return;
     }
 
-    // Initialize timezone database
-    tz.initializeTimeZones();
-    // You might need to set the local location based on user's timezone if not using UTC for notifications
-    // For simplicity, we'll schedule in UTC or device's local time directly later.
+    try {
+      // Initialize timezone database safely
+      tz.initializeTimeZones();
+      try {
+        // Try multiple timezone approaches for better compatibility
+        try {
+          // First try to use local timezone
+          final String timezoneName = tz.local.name;
+          tz.setLocalLocation(tz.getLocation(timezoneName));
+          print("✅ Set timezone to local: $timezoneName");
+        } catch (e) {
+          // If local timezone fails, try common alternatives
+          try {
+            tz.setLocalLocation(tz.getLocation("UTC"));
+            print("✅ Set timezone to UTC");
+          } catch (e2) {
+            // Last resort - use first available timezone
+            final availableTimezones = tz.timeZoneDatabase.locations.keys.toList();
+            if (availableTimezones.isNotEmpty) {
+              final firstTimezone = availableTimezones.first;
+              tz.setLocalLocation(tz.getLocation(firstTimezone));
+              print("✅ Set timezone to first available: $firstTimezone");
+            } else {
+              print("⚠️ No timezones available in database");
+            }
+          }
+        }
+      } catch (e) {
+        print("⚠️ Error setting timezone location: $e");
+        // Continue without setting specific timezone
+      }
 
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher'); // Ensure you have ic_launcher.png in android/app/src/main/res/mipmap
+      // Safely initialize notifications
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('app_icon'); // Use default app_icon instead of mipmap reference
 
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
-    );
+      const DarwinInitializationSettings initializationSettingsIOS =
+          DarwinInitializationSettings(
+        requestSoundPermission: false,
+        requestBadgePermission: false,
+        requestAlertPermission: false,
+      );
 
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+      const InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+      );
 
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
+      await flutterLocalNotificationsPlugin.initialize(
+        initializationSettings,
+        onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
+      );
 
-    // Create a default Android channel (important for Android 8.0+)
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'task_due_channel', // id
-      'Task Due Reminders', // title
-      description: 'Channel for task due date reminders.', // description
-      importance: Importance.high,
-    );
+      // Create a default Android channel (important for Android 8.0+)
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'task_due_channel', // id
+        'Task Due Reminders', // title
+        description: 'Channel for task due date reminders.', // description
+        importance: Importance.high,
+      );
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+      try {
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+            ?.createNotificationChannel(channel);
+      } catch (e) {
+        print("⚠️ Error creating notification channel: $e");
+        // Continue even if channel creation fails
+      }
 
-    // Request permissions for Android 13+ (POST_NOTIFICATIONS)
-    // and for iOS (handled by _requestIOSPermissions)
-    if (!kIsWeb) {
-      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      await androidImplementation?.requestNotificationsPermission();
-
-      await _requestIOSPermissions(); // This handles iOS
+      // Request permissions for Android 13+ and iOS
+      if (!kIsWeb) {
+        try {
+          final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+              flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+                  AndroidFlutterLocalNotificationsPlugin>();
+          await androidImplementation?.requestNotificationsPermission();
+          await _requestIOSPermissions(); // This handles iOS
+        } catch (e) {
+          print("⚠️ Error requesting notification permissions: $e");
+          // Continue even if permission request fails
+        }
+      }
+      print("✅ Notification service initialized successfully");
+    } catch (e) {
+      print("❌ Critical error initializing notification service: $e");
+      // Allow app to continue even if notifications fail completely
     }
   }
 
@@ -110,35 +152,57 @@ class NotificationService {
         return;
     }
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(scheduledDate, tz.local), // Convert to TZDateTime
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'task_due_channel', // <<< CORRECTED CHANNEL ID
-          'Task Expiry Notifications', // channel_name (can keep or align with channel creation)
-          channelDescription: 'Notifications for upcoming task deadlines.', // (can keep or align)
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true, // Ensure alert is shown in foreground
-          presentBadge: true, // Ensure badge is updated in foreground
-          presentSound: true, // Ensure sound is played in foreground
-        ),
+    // Log details for debugging
+    print("🔔 Scheduling notification with ID: $id");
+    print("🔔 Title: $title");
+    print("🔔 Due time: $scheduledDate");
+    
+    // Create notification details
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'task_due_channel', // Channel ID
+        'Task Due Reminders', // Channel Name
+        channelDescription: 'Channel for task due date reminders.',
+        importance: Importance.high,
+        priority: Priority.high,
+        // Remove icon parameter to use default
       ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, // Added required parameter
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
     );
-    print("Notification scheduled for id $id at $scheduledDate");
+
+    try {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tz.TZDateTime.from(scheduledDate, tz.local),
+        notificationDetails,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+      print("✅ Notification successfully scheduled for id $id at $scheduledDate");
+    } catch (e) {
+      print("❌ Error scheduling notification: $e");
+    }
   }
 
   Future<void> cancelNotification(int id) async {
     if (kIsWeb) return;
-    await flutterLocalNotificationsPlugin.cancel(id);
-    print("Cancelled notification with id $id");
+    
+    try {
+      // Ensure ID is within 32-bit range for Android compatibility
+      final int safeId = id & 0x7FFFFFFF; // Mask to positive 31-bit integer
+      
+      await flutterLocalNotificationsPlugin.cancel(safeId);
+      print("✅ Cancelled notification with id $safeId (original id: $id)");
+    } catch (e) {
+      print("⚠️ Error cancelling notification: $e");
+      // Continue app execution even if notification cancellation fails
+    }
   }
 
   Future<void> cancelAllNotifications() async {
@@ -147,24 +211,105 @@ class NotificationService {
     print("Cancelled all notifications");
   }
 
-  // Example method to show a test notification immediately
+  // Schedule a test notification that will fire in 5 seconds
+  Future<void> scheduleImmediateTestNotification() async {
+    if (kIsWeb) return;
+    
+    try {
+      final int testId = DateTime.now().millisecondsSinceEpoch % 2147483647;
+      final DateTime scheduledTime = DateTime.now().add(const Duration(seconds: 5));
+      
+      print("🔔 Scheduling test notification for 5 seconds from now");
+      print("🔔 Current time: ${DateTime.now()}");
+      print("🔔 Scheduled time: $scheduledTime");
+      
+      // Use a simpler approach with direct scheduling
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        testId,
+        '⏰ Scheduled Test (5s)',
+        'This notification was scheduled to appear 5 seconds after you pressed the button.',
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'task_due_channel',
+            'Task Due Reminders',
+            channelDescription: 'Channel for task due date reminders.',
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+      
+      print("✅ Test notification scheduled for 5 seconds from now");
+    } catch (e) {
+      print("❌ Error scheduling test notification: $e");
+      
+      // Fallback to immediate notification if scheduling fails
+      try {
+        final int testId = DateTime.now().millisecondsSinceEpoch % 2147483647;
+        print("🔔 Falling back to immediate notification due to scheduling error");
+        
+        await flutterLocalNotificationsPlugin.show(
+          testId,
+          '⏰ Fallback Test Notification',
+          'This is an immediate notification shown because scheduled notifications might not be working.',
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'task_due_channel',
+              'Task Due Reminders',
+              channelDescription: 'Channel for task due date reminders.',
+              importance: Importance.high,
+              priority: Priority.high,
+            ),
+            iOS: DarwinNotificationDetails(
+              presentAlert: true,
+              presentBadge: true,
+              presentSound: true,
+            ),
+          ),
+        );
+        print("✅ Fallback notification shown immediately");
+      } catch (e2) {
+        print("❌ Critical error: Both scheduled and immediate notifications failed: $e2");
+      }
+    }
+  }
+
+  // Test notification using the same channel as scheduled notifications
   Future<void> showTestNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'test_channel',
-      'Test Notifications',
-      channelDescription: 'Channel for testing notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: false,
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'task_due_channel', // Using same channel as scheduled notifications
+        'Task Due Reminders',
+        channelDescription: 'Channel for task due date reminders.',
+        importance: Importance.high,
+        priority: Priority.high,
+        // Remove icon parameter
+      ),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
     );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-      0, // Notification ID
-      'Test Notification', // Title
-      'This is a test notification from NotificationService.', // Body
-      platformChannelSpecifics,
-    );
+    
+    try {
+      await flutterLocalNotificationsPlugin.show(
+        DateTime.now().millisecondsSinceEpoch % 2147483647, // Dynamic ID to avoid conflicts
+        'Test Notification',
+        'This is a test notification from NotificationService.',
+        notificationDetails,
+      );
+      print("✅ Test notification shown successfully");
+    } catch (e) {
+      print("❌ Error showing test notification: $e");
+    }
   }
 } 

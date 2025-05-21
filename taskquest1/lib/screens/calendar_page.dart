@@ -126,7 +126,7 @@ class CalendarPage extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500),
                           ),
-                          if (task['dueDate'] != null) 
+                          if (task['dueDate'] != null)
                             Text(
                               'Due: ${DateFormat('MMM dd, yyyy hh:mm a').format(task['dueDate'].toLocal())}', // More specific time
                               style: TextStyle(

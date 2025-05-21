@@ -19,6 +19,7 @@ import '../services/notification_service.dart'; // Added NotificationService imp
 
 // final TaskRepository _taskRepo = TaskRepository();
 // final String _userId = "yourUserId"; // Replace with real auth UID when ready
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'; // Add import for notification details
 
 class TaskManagerPage extends StatefulWidget {
   final AppTheme currentTheme;
@@ -385,7 +386,10 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     final entry = {
       'id': _editingIndex != null
           ? _tasks[_editingIndex!]['id']
-          : DateTime.now().millisecondsSinceEpoch,
+          :
+          // Generate a safe ID for new tasks that fits within Android's 32-bit integer limits
+          // Use the current time modulo 2147483647 (max 31-bit signed integer)
+          DateTime.now().millisecondsSinceEpoch % 2147483647,
       'task': text,
       'dueDate': dueDateTime,
       'priority': _selectedPriority,
@@ -476,44 +480,87 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
       if (entry['dueDate'] != null &&
           (entry['dueDate'] as DateTime).isAfter(DateTime.now())) {
         final DateTime dueDate = entry['dueDate'] as DateTime;
-        final DateTime notificationTime = dueDate.subtract(const Duration(
-            minutes: 2)); // Temporarily set to 2 minutes for testing
-        // Ensure notification time is still in the future
-        if (notificationTime.isAfter(DateTime.now())) {
-          // Use task ID as notification ID. Convert timestamp to int.
-          // The ID from entry['id'] is likely a millisecondsSinceEpoch (int) or a Firestore document ID (String).
-          // For simplicity, assuming it's convertible to an int for notification ID.
-          // If task['id'] is a string, you might need a different strategy for int IDs or hash it.
-          // For this example, let's assume task ID is int or can be robustly hashed to int.
-          int notificationId =
-              entry['id'] is int ? entry['id'] : entry['id'].hashCode;
-          // Ensure notificationId is within 32-bit integer range if it's a hash
-          notificationId = notificationId & 0x7FFFFFFF;
+        // Use task ID as notification ID
+        int notificationId =
+            entry['id'] is int ? entry['id'] : entry['id'].hashCode;
+        // Ensure notificationId is within 32-bit integer range if it's a hash
+        notificationId = notificationId & 0x7FFFFFFF;
 
-          await _notificationService.scheduleNotification(
-            id: notificationId,
-            title: 'Task Due Soon: ${entry['task']}',
-            body:
-                'Your task "${entry['task']}" is due at ${DateFormat.jm().format(entry['dueDate'])}',
-            scheduledDate: notificationTime,
-          );
-        } else {
-          // If reminder time is in the past (e.g. task due in <1hr), schedule immediately or skip
-          // For simplicity, we can skip or schedule for a few seconds from now for testing
+        try {
+          final Duration timeUntilDue = dueDate.difference(DateTime.now());
           print(
-              "Reminder time is in the past, not scheduling or scheduling for very soon.");
-          // Example: Schedule for 5 seconds from now if it was in the past
-          // await _notificationService.scheduleNotification(
-          //   id: notificationId,
-          //   title: 'Task Starting Now!',
-          //   body: 'Your task "${entry['task']}" is starting.',
-          //   scheduledTime: DateTime.now().add(Duration(seconds: 5)),
-          //   payload: entry['id'].toString(),
-          // );
+              "📱 Task: ${entry['task']} due in ${timeUntilDue.inMinutes} minutes, ${timeUntilDue.inSeconds % 60} seconds");
+
+          if (timeUntilDue.inSeconds <= 30) {
+            // If task is due in less than 30 seconds, show notification immediately
+            print("📱 Task due very soon, showing immediate notification");
+            await _notificationService.flutterLocalNotificationsPlugin.show(
+              notificationId,
+              '⚠️ Task Due Now: ${entry['task']}',
+              'Your task "${entry['task']}" is due at ${DateFormat.jm().format(entry['dueDate'])}',
+              const NotificationDetails(
+                android: AndroidNotificationDetails(
+                  'task_due_channel',
+                  'Task Due Reminders',
+                  channelDescription: 'Channel for task due date reminders.',
+                  importance: Importance.high,
+                  priority: Priority.high,
+                ),
+                iOS: DarwinNotificationDetails(
+                  presentAlert: true,
+                  presentBadge: true,
+                  presentSound: true,
+                ),
+              ),
+            );
+            print("📱 Immediate notification shown for imminent task");
+          } else if (timeUntilDue.inMinutes < 5) {
+            // If task is due in less than 5 minutes, show notification immediately
+            print("📱 Task due in < 5 minutes, showing immediate notification");
+            await _notificationService.flutterLocalNotificationsPlugin.show(
+              notificationId,
+              '⚠️ Task Due Soon: ${entry['task']}',
+              'Your task "${entry['task']}" is due at ${DateFormat.jm().format(entry['dueDate'])} (in ${timeUntilDue.inMinutes} min)',
+              const NotificationDetails(
+                android: AndroidNotificationDetails(
+                  'task_due_channel',
+                  'Task Due Reminders',
+                  channelDescription: 'Channel for task due date reminders.',
+                  importance: Importance.high,
+                  priority: Priority.high,
+                ),
+                iOS: DarwinNotificationDetails(
+                  presentAlert: true,
+                  presentBadge: true,
+                  presentSound: true,
+                ),
+              ),
+            );
+            print("📱 Immediate notification shown for soon-due task");
+          } else {
+            // Task is due more than 5 minutes in the future, schedule a notification
+            final DateTime notificationTime =
+                dueDate.subtract(const Duration(seconds: 30));
+            print(
+                "📱 Task due in ${timeUntilDue.inMinutes} minutes, scheduling notification for 30 seconds before");
+
+            // Schedule notification for tasks further in the future
+            await _notificationService.scheduleNotification(
+              id: notificationId,
+              title: 'Task Due Soon: ${entry['task']}',
+              body:
+                  'Your task "${entry['task']}" is due at ${DateFormat.jm().format(entry['dueDate'])}',
+              scheduledDate: notificationTime,
+            );
+            print(
+                "📱 Notification scheduled with ID: $notificationId for future task");
+          }
+        } catch (e) {
+          print("📱 Error with notification: $e");
+          // Continue with task saving even if notification fails
         }
       } else {
-        // If task has no due date or it's in the past, cancel any existing notification for this task ID (if any)
-        // (This handles editing a task to remove/past-date its due date)
+        // If task has no due date or it's in the past, cancel any existing notification for this task ID
         int notificationId =
             entry['id'] is int ? entry['id'] : entry['id'].hashCode;
         notificationId = notificationId & 0x7FFFFFFF;
@@ -599,9 +646,27 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     final String taskId = taskToDelete['id'].toString();
     final String? googleEventId =
         taskToDelete['googleCalendarEventId'] as String?;
-    final int notificationId = taskToDelete['id'] is int
-        ? taskToDelete['id']
-        : taskToDelete['id'].hashCode & 0x7FFFFFFF;
+
+    // Get the notification ID
+    int notificationId;
+    try {
+      // Try to handle the ID safely (could be a large millisecondsSinceEpoch)
+      if (taskToDelete['id'] is int) {
+        // Use the bitwise AND operation to mask the value to a positive 31-bit integer
+        notificationId = taskToDelete['id'] & 0x7FFFFFFF;
+      } else {
+        // If not an int, use hashCode and mask it
+        notificationId = taskToDelete['id'].hashCode & 0x7FFFFFFF;
+      }
+
+      print(
+          "📱 Deleting task with original ID: ${taskToDelete['id']}, notification ID: $notificationId");
+    } catch (e) {
+      // If there's an error processing the ID, use a fallback based on current time
+      notificationId = DateTime.now().millisecondsSinceEpoch % 2147483647;
+      print(
+          "⚠️ Error processing task ID, using fallback: $notificationId - Error: $e");
+    }
 
     // Optimistically remove from UI first
     setState(() {
@@ -614,8 +679,14 @@ class _TaskManagerPageState extends State<TaskManagerPage> {
     try {
       // Delete from Firestore
       await _taskRepo.deleteTask(_userId, taskId);
-      await _notificationService
-          .cancelNotification(notificationId); // Cancel notification
+
+      // Cancel notification (using our improved method that handles large IDs safely)
+      try {
+        await _notificationService.cancelNotification(notificationId);
+      } catch (notifError) {
+        print("📱 Error cancelling notification: $notifError");
+        // Continue with deletion even if notification cancellation fails
+      }
 
       // Delete from Google Calendar if an event ID exists
       if (googleEventId != null && googleEventId.isNotEmpty) {

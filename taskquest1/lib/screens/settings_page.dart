@@ -235,7 +235,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   channelDescription: 'Channel for task due date reminders.',
                   importance: Importance.high,
                   priority: Priority.high,
-                  icon: '@mipmap/ic_launcher',
                 ),
                 iOS: DarwinNotificationDetails(
                   presentAlert: true,
@@ -246,18 +245,29 @@ class _SettingsPageState extends State<SettingsPage> {
               payload: 'test_payload_from_settings_simple_$testId',
             );
 
-            // Original scheduling call (commented out for now for this test)
-            // await notificationService.scheduleNotification(
-            //   id: testId,
-            //   title: '🧪 Test Notification',
-            //   body: 'This is a test notification fired from Settings!',
-            //   scheduledDate: DateTime.now().add(const Duration(seconds: 5)),
-            //   payload: 'test_payload_from_settings_$testId',
-            // );
-
             if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Test notification scheduled in 5 seconds.')),
+                    SnackBar(content: Text('Immediate notification sent (should appear now)')),
+                );
+            }
+          },
+        ),
+        Divider(),
+        
+        // Scheduled Test Notification Button (5 seconds in future)
+        ListTile(
+          leading: Icon(Icons.alarm, color: Colors.deepOrange),
+          title: Text('Test Scheduled Notification'),
+          subtitle: Text('Schedules a notification that will appear in 5 seconds'),
+          onTap: () async {
+            final NotificationService notificationService = NotificationService();
+            
+            // Use our improved method that now properly schedules a notification
+            await notificationService.scheduleImmediateTestNotification();
+            
+            if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Notification scheduled - should appear in 5 seconds')),
                 );
             }
           },
