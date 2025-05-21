@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'screens/components/const/colors.dart';
 
 /// Enumerate all modes you plan to support
-enum AppTheme { Default, Dark, Blue }
+enum AppTheme { Default, Dark, Blue, HighContrast }
 
 /// Map each mode to its ThemeData
 final Map<AppTheme, ThemeData> appThemeData = {
