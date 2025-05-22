@@ -1,11 +1,13 @@
 // lib/screens/authentication_ui.dart
 
 import 'package:flutter/material.dart';
+// import 'package:google_sign_in/google_sign_in.dart'; // No longer needed here
 import 'components/const/colors.dart';
 import 'components/button_widget.dart';
 import 'sign_up_ui.dart';
 import 'task_manager_page.dart';
 import '../services/authentication_service.dart';
+// import '../services/calendar_service.dart'; // No longer needed here
 import 'package:firebase_auth/firebase_auth.dart';
 import '../theme.dart';  // for AppTheme
 
@@ -29,6 +31,10 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
   final _formKey = GlobalKey<FormState>();
   final AuthenticationService _authService =
   AuthenticationService(FirebaseAuth.instance);
+  // final CalendarService _calendarService = CalendarService(); // Removed
+  // bool _isSigningInWithGoogle = false; // Removed
+
+  // _signInWithGoogle method removed entirely
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +46,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
@@ -113,7 +120,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                       password: password,
                     );
                     if (result == "Signed in") {
-                      Navigator.push(
+                        Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => TaskManagerPage(
@@ -131,6 +138,14 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 },
               ),
 
+                // SizedBox(height: 10), // Removed space for Google button
+                // Google Sign-In Button Removed
+                // _isSigningInWithGoogle
+                //   ? CircularProgressIndicator()
+                //   : ButtonWidget(
+                //       text: 'Sign In with Google',
+                //       onPressed: _signInWithGoogle,
+                //     ),
               SizedBox(height: 20),
 
               // Sign up prompt
@@ -158,6 +173,7 @@ class _AuthenticationUIState extends State<AuthenticationUI> {
                 ],
               ),
             ],
+            ),
           ),
         ),
       ),

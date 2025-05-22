@@ -2,19 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:taskquest1/screens/sign_up_ui.dart';
 import 'screens/authentication_ui.dart';
-import 'screens/components/const/colors.dart';
-import 'screens/task_manager_page.dart';
 import 'theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  
+  try {
+    await Firebase.initializeApp();
+    print('✅ Firebase initialized successfully');
+  } catch (e) {
+    print('❌ Error initializing Firebase: $e');
+  }
+  
+  // Initialize notifications in a non-blocking way
+  try {
+    await NotificationService().init();
+  } catch (e) {
+    print('❌ Error initializing notifications: $e');
+    // Continue app startup even if notification initialization fails
+  }
 
   // Safely load .env file
   try {
     await dotenv.load(fileName: ".env");
-    print('Loaded API Key: ${dotenv.env['OPENAI_API_KEY']}');
+    print('✅ Loaded API Key: ${dotenv.env['OPENAI_API_KEY'] != null ? 'Successfully' : 'Not found'}');
   } catch (e) {
     print('⚠️ .env file not found or failed to load: $e');
   }
